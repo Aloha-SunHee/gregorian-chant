@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>어린이 성가대 라틴어 모험 & 미니게임 천국</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Jua, Nunito -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jua&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Jua', 'Nunito', sans-serif;
+      background: linear-gradient(135deg, #f0fdf4 0%, #eff6ff 50%, #fdf2f8 100%);
+      min-height: 100vh;
+    }
+    .latin-font {
+      font-family: 'Nunito', serif;
+      letter-spacing: 0.5px;
+    }
+    .card-perspective {
+      perspective: 1000px;
+    }
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+    .card-flipped {
+      transform: rotateY(180deg);
+    }
+    .card-front, .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 1.5rem;
+    }
+    .card-back {
+      transform: rotateY(180deg);
+    }
+    @keyframes gentle-bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-7px); }
+    }
+    .animate-gentle {
+      animation: gentle-bounce 2s infinite ease-in-out;
+    }
+    @keyframes rocket-dash {
+      0% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-20px) scale(1.2) rotate(15deg); }
+      100% { transform: translateY(0) scale(1); }
+    }
+    .animate-rocket {
+      animation: rocket-dash 0.8s ease-in-out;
+    }
+    /* 카드 매칭 트랜지션 */
+    .memory-card {
+      transition: all 0.3s ease;
+      transform-style: preserve-3d;
+    }
+    .memory-card.is-matched {
+      opacity: 0.65;
+      border-color: #10b981 !important;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body class="text-slate-800 flex flex-col items-center justify-between p-3 sm:p-5 select-none">
+
+  <!-- 공통 상단 네비게이션 바 -->
+  <nav class="w-full max-w-2xl flex items-center justify-between bg-white/90 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-sm border border-indigo-100 mb-4 sticky top-2 z-50">
+    <button onclick="navigateTo('hub')" class="flex items-center gap-2 text-indigo-950 hover:text-indigo-600 transition font-black text-sm sm:text-base">
+      <span class="text-2xl">🕊️</span>
+      <span>성가대 라틴어 모험</span>
+    </button>
+    <div class="flex items-center gap-2">
+      <!-- 현재 곡 링크 공유 버튼 -->
+      <button id="share-link-btn" onclick="copyCurrentLink()" class="px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl text-xs font-bold transition flex items-center gap-1 border border-indigo-200" title="이 곡의 주소 복사하기">
+        <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+        <span id="share-btn-text" class="hidden sm:inline">링크 복사</span>
+      </button>
+      <!-- 홈으로 가기 버튼 -->
+      <button onclick="navigateTo('hub')" class="px-3 py-1.5 bg-amber-400 hover:bg-amber-500 text-amber-950 rounded-xl text-xs font-black transition flex items-center gap-1 shadow-sm">
+        <i data-lucide="home" class="w-4 h-4"></i>
+        <span>곡 목록</span>
+      </button>
+    </div>
+  </nav>
+
+
+  <!-- ================================================================= -->
+  <!-- 1. 메인 허브 화면 (Hub View) -->
+  <!-- ================================================================= -->
+  <section id="view-hub" class="w-full max-w-2xl flex flex-col items-center text-center">
+    <div class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-amber-100/90 border border-amber-300 rounded-full text-amber-900 text-xs sm:text-sm font-bold mb-3 shadow-sm">
+      <span>🎼 즐겁게 부르고 신나게 맞추는 그레고리안 성가 4선</span>
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black text-indigo-950 tracking-wide mb-2 drop-shadow-sm">
+      어린이 라틴어 성가 놀이터
+    </h1>
+    <p class="text-sm sm:text-base text-slate-600 mb-6 font-normal">
+      공부하고 싶은 성가를 선택해보세요! 곡마다 특별하고 재미있는 게임이 기다려요 🎈
+    </p>
+
+    <!-- 4개 곡 바로가기 카드 그리드 -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full px-1">
+      
+      <!-- 카드 1: Salve Mater -->
+      <div onclick="navigateTo('salve')" class="cursor-pointer group bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl p-5 text-white text-left shadow-lg hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between relative overflow-hidden border-2 border-indigo-300/40">
+        <div class="absolute -right-4 -bottom-4 text-7xl opacity-20 group-hover:scale-110 transition-transform">✨</div>
+        <div>
+          <span class="inline-block px-2.5 py-0.5 rounded-full bg-white/20 text-[11px] font-bold tracking-wider mb-2">제 1 곡 • 성모 찬미</span>
+          <h3 class="text-xl font-black latin-font">Salve Mater</h3>
+          <p class="text-indigo-100 text-xs mt-0.5">자비로우신 어머니, 하례하나이다</p>
+        </div>
+        <div class="mt-5 flex items-center justify-between pt-3 border-t border-white/20">
+          <span class="text-xs font-bold text-amber-200 flex items-center gap-1">
+            <i data-lucide="layers" class="w-4 h-4"></i> 플립카드 & 스피드 퀴즈
+          </span>
+          <span class="w-8 h-8 rounded-full bg-white text-indigo-600 flex items-center justify-center font-bold shadow-md group-hover:translate-x-1 transition">➔</span>
+        </div>
+      </div>
+
+      <!-- 카드 2: Ubi Caritas -->
+      <div onclick="navigateTo('ubi')" class="cursor-pointer group bg-gradient-to-br from-emerald-500 to-teal-600 rounded-3xl p-5 text-white text-left shadow-lg hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between relative overflow-hidden border-2 border-emerald-300/40">
+        <div class="absolute -right-4 -bottom-4 text-7xl opacity-20 group-hover:scale-110 transition-transform">💖</div>
+        <div>
+          <span class="inline-block px-2.5 py-0.5 rounded-full bg-white/20 text-[11px] font-bold tracking-wider mb-2">제 2 곡 • 사랑의 성가</span>
+          <h3 class="text-xl font-black latin-font">Ubi Caritas</h3>
+          <p class="text-emerald-100 text-xs mt-0.5">자애와 사랑이 있는 곳에 하느님 계시도다</p>
+        </div>
+        <div class="mt-5 flex items-center justify-between pt-3 border-t border-white/20">
+          <span class="text-xs font-bold text-amber-200 flex items-center gap-1">
+            <i data-lucide="copy" class="w-4 h-4"></i> 카드 짝맞추기 메모리 게임
+          </span>
+          <span class="w-8 h-8 rounded-full bg-white text-emerald-600 flex items-center justify-center font-bold shadow-md group-hover:translate-x-1 transition">➔</span>
+        </div>
+      </div>
+
+      <!-- 카드 3: Adoremus in Aeternum -->
+      <div onclick="navigateTo('adoremus')" class="cursor-pointer group bg-gradient-to-br from-amber-500 to-orange-600 rounded-3xl p-5 text-white text-left shadow-lg hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between relative overflow-hidden border-2 border-amber-300/40">
+        <div class="absolute -right-4 -bottom-4 text-7xl opacity-20 group-hover:scale-110 transition-transform">👑</div>
+        <div>
+          <span class="inline-block px-2.5 py-0.5 rounded-full bg-white/20 text-[11px] font-bold tracking-wider mb-2">제 3 곡 • 성체 흠숭</span>
+          <h3 class="text-xl font-black latin-font">Adoremus in Aeternum</h3>
+          <p class="text-amber-100 text-xs mt-0.5">지극히 거룩한 성체를 영원히 흠숭하나이다</p>
+        </div>
+        <div class="mt-5 flex items-center justify-between pt-3 border-t border-white/20">
+          <span class="text-xs font-bold text-yellow-200 flex items-center gap-1">
+            <i data-lucide="grid" class="w-4 h-4"></i> 3x3 단어 빙고 어드벤처
+          </span>
+          <span class="w-8 h-8 rounded-full bg-white text-amber-600 flex items-center justify-center font-bold shadow-md group-hover:translate-x-1 transition">➔</span>
+        </div>
+      </div>
+
+      <!-- 카드 4: Ave Verum Corpus -->
+      <div onclick="navigateTo('ave')" class="cursor-pointer group bg-gradient-to-br from-rose-500 to-pink-600 rounded-3xl p-5 text-white text-left shadow-lg hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between relative overflow-hidden border-2 border-rose-300/40">
+        <div class="absolute -right-4 -bottom-4 text-7xl opacity-20 group-hover:scale-110 transition-transform">🚀</div>
+        <div>
+          <span class="inline-block px-2.5 py-0.5 rounded-full bg-white/20 text-[11px] font-bold tracking-wider mb-2">제 4 곡 • 성체 찬미가</span>
+          <h3 class="text-xl font-black latin-font">Ave Verum Corpus</h3>
+          <p class="text-rose-100 text-xs mt-0.5">동정녀 마리아에게서 태어나신 참된 몸이시여</p>
+        </div>
+        <div class="mt-5 flex items-center justify-between pt-3 border-t border-white/20">
+          <span class="text-xs font-bold text-yellow-200 flex items-center gap-1">
+            <i data-lucide="dices" class="w-4 h-4"></i> 주사위 굴리기 & 로켓 보드게임
+          </span>
+          <span class="w-8 h-8 rounded-full bg-white text-rose-600 flex items-center justify-center font-bold shadow-md group-hover:translate-x-1 transition">➔</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 공유 및 안내 도움말 박스 -->
+    <div class="mt-8 bg-white/80 border border-slate-200 rounded-2xl p-4 w-full text-left text-xs text-slate-600 shadow-sm flex items-start gap-3">
+      <span class="text-2xl shrink-0">📱</span>
+      <div>
+        <p class="font-bold text-indigo-950 text-sm mb-1">성가대 단체 채팅방 공유 꿀팁!</p>
+        <p class="leading-relaxed">
+          주소 뒤에 <code class="bg-slate-100 px-1.5 py-0.5 rounded text-indigo-700 font-mono font-bold">#salve</code>, <code class="bg-slate-100 px-1.5 py-0.5 rounded text-emerald-700 font-mono font-bold">#ubi</code>, <code class="bg-slate-100 px-1.5 py-0.5 rounded text-amber-700 font-mono font-bold">#adoremus</code>, <code class="bg-slate-100 px-1.5 py-0.5 rounded text-rose-700 font-mono font-bold">#ave</code> 를 붙이면 바로 원하는 곡 화면이 열립니다. 각 곡 화면의 <b>[링크 복사]</b> 버튼을 누르면 링크가 복사됩니다!
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================================================================= -->
+  <!-- 2. 곡 상세 화면 템플릿 영역 (Song Detail View) -->
+  <!-- ================================================================= -->
+  <section id="view-song" class="w-full max-w-2xl hidden flex-col items-center text-center">
+    
+    <!-- 곡 헤더 -->
+    <div class="mb-3">
+      <span id="song-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800 border border-indigo-200">
+        제 1 곡 • 성모 찬미
+      </span>
+      <h2 id="song-title" class="text-2xl sm:text-3xl font-black text-indigo-950 latin-font mt-2">
+        Salve Mater Misericordiae
+      </h2>
+      <p id="song-sub" class="text-xs sm:text-sm text-slate-600 mt-0.5">
+        자비로우신 어머니, 하례하나이다
+      </p>
+    </div>
+
+    <!-- 공통 고성능 성가 오디오 플레이어 위젯 -->
+    <div class="w-full bg-white/95 rounded-3xl p-4 shadow-lg border-2 border-slate-200 text-left mb-4">
+      <div class="flex items-center justify-between gap-2 mb-2">
+        <div class="flex items-center gap-2.5 overflow-hidden">
+          <div id="player-theme-icon" class="w-9 h-9 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-md">
+            <i data-lucide="music" class="w-5 h-5"></i>
+          </div>
+          <div class="truncate">
+            <h4 id="audio-title" class="text-xs sm:text-sm font-bold text-slate-800 truncate">음원 불러오는 중...</h4>
+            <p id="audio-status" class="text-[11px] text-slate-500 font-sans">준비 완료</p>
+          </div>
+        </div>
+
+        <!-- 음원 직접 파일 열기 버튼 -->
+        <label class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded-xl text-xs font-bold transition shadow-sm shrink-0">
+          <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+          <span>내 MP3 열기</span>
+          <input type="file" id="audio-file-input" accept="audio/*" class="hidden" onchange="handleAudioUpload(event)">
+        </label>
+      </div>
+
+      <!-- 오디오 태그 -->
+      <audio id="chant-audio" preload="metadata" ontimeupdate="onAudioTimeUpdate()" onloadedmetadata="onAudioMetadataLoaded()" onended="onAudioEnded()"></audio>
+
+      <!-- 탐색 슬라이더 바 -->
+      <div class="space-y-1">
+        <input type="range" id="audio-progress" min="0" max="100" value="0" step="0.1" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer" oninput="seekAudio(event)">
+        <div class="flex justify-between text-[11px] font-mono text-slate-500 font-semibold">
+          <span id="current-time">00:00</span>
+          <span id="total-duration">--:--</span>
+        </div>
+      </div>
+
+      <!-- 플레이어 컨트롤 버튼들 -->
+      <div class="flex items-center justify-between mt-2 pt-2 border-t border-slate-100">
+        <!-- 속도 조절 -->
+        <div class="flex items-center gap-1">
+          <span class="text-[11px] font-bold text-slate-400 mr-0.5">속도:</span>
+          <button onclick="setSpeed(0.8)" class="speed-btn px-2 py-0.5 text-xs font-bold rounded-lg border bg-white text-slate-600" data-speed="0.8">0.8x</button>
+          <button onclick="setSpeed(1.0)" class="speed-btn px-2 py-0.5 text-xs font-bold rounded-lg border bg-indigo-600 text-white shadow-sm" data-speed="1.0">1.0x</button>
+          <button onclick="setSpeed(1.2)" class="speed-btn px-2 py-0.5 text-xs font-bold rounded-lg border bg-white text-slate-600" data-speed="1.2">1.2x</button>
+        </div>
+
+        <!-- 재생/정지 및 5초 앞뒤 이동 -->
+        <div class="flex items-center gap-2">
+          <button onclick="skipAudio(-5)" class="p-2 text-slate-600 hover:text-indigo-600 hover:bg-slate-100 rounded-full transition" title="5초 뒤로">
+            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          </button>
+          <button id="play-btn" onclick="togglePlay()" class="p-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl shadow-md active:scale-95 transition flex items-center justify-center">
+            <i data-lucide="play" id="play-icon" class="w-5 h-5 fill-current"></i>
+          </button>
+          <button onclick="skipAudio(5)" class="p-2 text-slate-600 hover:text-indigo-600 hover:bg-slate-100 rounded-full transition" title="5초 앞으로">
+            <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- 볼륨 조절 -->
+        <div class="flex items-center gap-1.5">
+          <button onclick="toggleMute()" class="text-slate-500 hover:text-indigo-600 transition">
+            <i data-lucide="volume-2" id="volume-icon" class="w-4 h-4"></i>
+          </button>
+          <input type="range" id="audio-volume" min="0" max="1" step="0.05" value="1" class="w-16 h-1.5 bg-slate-200 rounded-lg cursor-pointer" oninput="changeVolume(event)">
+        </div>
+      </div>
+    </div>
+
+    <!-- 학습 모드 vs 미니 게임 모드 탭 스위처 -->
+    <div class="bg-white/80 p-1.5 rounded-2xl flex max-w-xs w-full mx-auto shadow-sm border border-slate-200 mb-4">
+      <button id="tab-btn-study" onclick="switchSongTab('study')" class="flex-1 py-2 text-xs sm:text-sm rounded-xl font-black flex items-center justify-center gap-1.5 bg-indigo-600 text-white shadow transition">
+        <i data-lucide="book-open" class="w-4 h-4"></i> 핵심 단어장
+      </button>
+      <button id="tab-btn-game" onclick="switchSongTab('game')" class="flex-1 py-2 text-xs sm:text-sm rounded-xl font-black flex items-center justify-center gap-1.5 text-slate-600 hover:text-indigo-600 transition">
+        <i data-lucide="gamepad-2" class="w-4 h-4"></i> 맞춤 게임 🎮
+      </button>
+    </div>
+
+
+    <!-- ================= 단어장 탭 화면 ================= -->
+    <div id="song-tab-study" class="w-full flex flex-col items-center">
+      <div id="vocab-cards-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full text-left">
+        <!-- 동적으로 단어 카드들이 주입됩니다 -->
+      </div>
+
+      <!-- 전체 가사 보기 토글 -->
+      <details class="w-full bg-white/90 rounded-2xl p-4 shadow-sm border border-slate-200 text-left text-xs mt-4">
+        <summary class="font-bold text-slate-800 cursor-pointer flex justify-between items-center">
+          <span>📖 이 곡의 전체 라틴어 가사 및 번역 보기</span>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
+        </summary>
+        <div id="song-full-lyrics" class="mt-3 space-y-2.5 text-slate-600 border-t pt-3 font-sans leading-relaxed">
+          <!-- 곡별 전체 가사 -->
+        </div>
+      </details>
+    </div>
+
+
+    <!-- ================= 미니게임 탭 화면 ================= -->
+    <div id="song-tab-game" class="w-full hidden flex-col items-center">
+      
+      <!-- [곡 1] 살베 마테르 게임: 3D 플립카드 & 4지선다 퀴즈 -->
+      <div id="game-salve" class="w-full hidden flex-col items-center max-w-md">
+        <!-- 3D 뒤집기 플래시 카드 -->
+        <div class="card-perspective w-full h-72 cursor-pointer mb-3" onclick="flipSalveCard()">
+          <div id="salve-card-inner" class="card-inner shadow-xl rounded-3xl">
+            <!-- 앞면 -->
+            <div class="card-front bg-gradient-to-br from-white via-indigo-50 to-blue-50 border-4 border-indigo-200 p-6 flex flex-col justify-between">
+              <div class="w-full flex justify-between items-center">
+                <span class="text-2xl">✨</span>
+                <span class="text-xs bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full font-bold">라틴어 단어</span>
+              </div>
+              <div class="my-auto text-center">
+                <div id="salve-card-latin" class="text-3xl sm:text-4xl font-black text-indigo-950 latin-font mb-1">Salve</div>
+                <div id="salve-card-phonetic" class="text-sm font-normal text-indigo-500 font-sans">[살-베]</div>
+              </div>
+              <div class="text-slate-400 text-xs font-semibold flex items-center gap-1">
+                <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i> 터치하면 한글 뜻이 나타나요!
+              </div>
+            </div>
+            <!-- 뒷면 -->
+            <div class="card-back bg-gradient-to-br from-amber-50 via-orange-50 to-white border-4 border-amber-300 p-6 flex flex-col justify-between">
+              <div class="w-full flex justify-between items-center">
+                <span class="text-2xl">💡</span>
+                <span class="text-xs bg-amber-200 text-amber-900 px-3 py-1 rounded-full font-bold">뜻 & 의미</span>
+              </div>
+              <div class="my-auto text-center w-full px-2">
+                <div id="salve-card-meaning" class="text-2xl sm:text-3xl font-black text-orange-950 mb-2">안녕! / 하례하나이다</div>
+                <p id="salve-card-ctx" class="text-xs text-slate-600 bg-white/80 p-2.5 rounded-xl border border-orange-200">자비로우신 어머니, 하례하나이다</p>
+              </div>
+              <div class="text-amber-700/60 text-xs font-semibold">다시 누르면 라틴어로 돌아가요 ↺</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between w-full gap-2 mb-6">
+          <button onclick="salveCardNav(-1)" class="flex-1 py-2.5 bg-white border border-slate-200 rounded-xl font-bold text-sm shadow-sm">이전 단어</button>
+          <span id="salve-card-page" class="text-xs font-mono font-bold text-slate-500 px-2">1/8</span>
+          <button onclick="salveCardNav(1)" class="flex-1 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-sm shadow-md">다음 단어</button>
+        </div>
+
+        <!-- 4지선다 스피드 퀴즈 영역 -->
+        <div class="w-full bg-white rounded-3xl p-5 shadow-lg border-2 border-indigo-100 text-center">
+          <div class="flex justify-between items-center text-xs font-bold text-slate-500 mb-2">
+            <span>스피드 4지선다 퀴즈</span>
+            <span id="salve-quiz-score" class="text-amber-600 font-extrabold flex items-center gap-1">
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i> 점수: 0
+            </span>
+          </div>
+          <div id="salve-quiz-word" class="text-2xl sm:text-3xl font-black text-indigo-950 latin-font my-2">Misericordiae</div>
+          <p id="salve-quiz-phonetic" class="text-xs text-slate-400 mb-4">[미-세-리-코르-디-에]</p>
+          <div id="salve-quiz-options" class="grid grid-cols-1 gap-2"></div>
+          <div id="salve-quiz-feedback" class="mt-3 text-sm font-bold min-h-[20px]"></div>
+        </div>
+      </div>
+
+
+      <!-- [곡 2] 우비 카리타스 게임: 카드 매칭 짝맞추기 게임 (Memory Flip Match) -->
+      <div id="game-ubi" class="w-full hidden flex-col items-center max-w-lg">
+        <div class="w-full flex justify-between items-center bg-white/95 px-4 py-3 rounded-2xl border border-emerald-200 shadow-sm mb-3">
+          <div class="text-left">
+            <h4 class="text-sm font-black text-emerald-950">라틴어 짝맞추기 메모리 게임 💖</h4>
+            <p class="text-[11px] text-slate-500">라틴어 단어와 알맞은 한글 뜻 카드를 뒤집어 짝을 맞춰보세요!</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <span id="ubi-match-count" class="text-xs font-bold bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-xl">맞춘 짝: 0/6</span>
+            <button onclick="initUbiMemoryGame()" class="p-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition shadow" title="게임 다시 시작">
+              <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- 12장의 카드 그리드 (6쌍) -->
+        <div id="ubi-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-2.5 w-full">
+          <!-- 동적 생성 카드 -->
+        </div>
+
+        <!-- 승리 축하 배너 -->
+        <div id="ubi-win-banner" class="hidden w-full bg-emerald-500 text-white rounded-2xl p-4 mt-4 shadow-lg text-center animate-gentle">
+          <div class="text-3xl mb-1">🎉 참 잘했어요! 💖</div>
+          <p class="text-xs font-bold text-emerald-100">모든 사랑의 라틴어 짝을 다 찾았습니다!</p>
+          <button onclick="initUbiMemoryGame()" class="mt-3 px-4 py-2 bg-white text-emerald-700 rounded-xl font-black text-xs shadow hover:bg-emerald-50 transition">
+            한 번 더 하기 ↺
+          </button>
+        </div>
+      </div>
+
+
+      <!-- [곡 3] 아도레무스 게임: 3x3 라틴어 빙고 어드벤처 (Bingo Adventure) -->
+      <div id="game-adoremus" class="w-full hidden flex-col items-center max-w-md">
+        <div class="w-full bg-white/95 p-4 rounded-3xl border-2 border-amber-200 shadow-md text-center mb-3">
+          <div class="flex justify-between items-center text-xs font-bold text-amber-800 mb-1">
+            <span>👑 3x3 성체 흠숭 빙고 게임</span>
+            <span id="bingo-lines-count" class="bg-amber-100 px-2.5 py-0.5 rounded-full font-extrabold text-amber-900">빙고: 0줄</span>
+          </div>
+          <p class="text-xs text-slate-500 mb-2">아래 한국어 뜻에 맞는 라틴어 칸을 클릭하세요!</p>
+          <div class="p-3 bg-amber-50 rounded-2xl border border-amber-200 shadow-inner">
+            <span class="text-[11px] font-bold text-amber-600 block">이번 문제의 뜻:</span>
+            <span id="bingo-target-meaning" class="text-lg sm:text-xl font-black text-amber-950">흠숭하나이다</span>
+          </div>
+        </div>
+
+        <!-- 3x3 빙고 보드판 -->
+        <div id="bingo-grid" class="grid grid-cols-3 gap-2 w-full p-2 bg-amber-100/70 rounded-3xl border-2 border-amber-300">
+          <!-- 9개 칸 동적 주입 -->
+        </div>
+
+        <!-- 빙고 성공 알림 -->
+        <div id="bingo-win-msg" class="hidden w-full bg-amber-500 text-white rounded-2xl p-4 mt-3 shadow-lg text-center animate-gentle">
+          <div class="text-3xl mb-1">🎊 BINGO 달성! 👑</div>
+          <p class="text-xs text-amber-100">지극히 거룩한 성체를 영원히 흠숭하나이다!</p>
+          <button onclick="initAdoremusBingo()" class="mt-2.5 px-4 py-2 bg-white text-amber-800 rounded-xl font-black text-xs shadow hover:bg-amber-50 transition">
+            새 빙고판 만들기 ↺
+          </button>
+        </div>
+      </div>
+
+
+      <!-- [곡 4] 아베 베룸 게임: 주사위 굴리기 & 로켓 우주 지도 탐험 -->
+      <div id="game-ave" class="w-full hidden flex-col items-center max-w-lg">
+        <!-- 보드게임 제어판 (주사위 및 상태) -->
+        <div class="w-full bg-white/95 p-4 rounded-3xl border-2 border-rose-200 shadow-md mb-3 text-left">
+          <div class="flex items-center justify-between gap-2">
+            <div>
+              <span class="text-xs bg-rose-100 text-rose-700 px-2.5 py-0.5 rounded-full font-bold">로켓 우주 지도 탐험</span>
+              <h4 class="text-base font-black text-slate-800 mt-1">
+                내 위치: <span id="board-player-step" class="text-rose-600 font-mono">0</span>번째 칸 (출발!)
+              </h4>
+            </div>
+            <!-- 주사위 굴리기 버튼 -->
+            <button id="dice-roll-btn" onclick="rollDice()" class="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white font-black rounded-2xl shadow-md active:scale-95 transition">
+              <span id="dice-face" class="text-2xl">🎲</span>
+              <span id="dice-btn-text">주사위 굴리기!</span>
+            </button>
+          </div>
+          <!-- 피드백 메시지 배너 -->
+          <div id="board-game-feedback" class="mt-2.5 text-xs font-bold text-slate-600 min-h-[20px] bg-slate-50 p-2 rounded-xl border border-slate-200">
+            주사위를 굴려서 탐험을 시작해보세요! 🚀
+          </div>
+        </div>
+
+        <!-- 15칸 보드게임 지도 (스네이크형 맵 레이아웃) -->
+        <div id="board-track" class="grid grid-cols-4 sm:grid-cols-5 gap-2 w-full p-3 bg-rose-50/70 rounded-3xl border-2 border-rose-200 shadow-inner">
+          <!-- 16개 칸 동적 생성 (0번 출발부터 15번 골인까지) -->
+        </div>
+
+        <!-- 문제 풀기 팝업 모달창 -->
+        <div id="board-quiz-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border-4 border-rose-300 text-center animate-gentle">
+            <span class="text-xs bg-rose-100 text-rose-800 px-3 py-1 rounded-full font-bold">도착한 칸의 퀴즈!</span>
+            <div id="modal-quiz-word" class="text-2xl font-black text-rose-950 latin-font mt-3 mb-1">Corpus</div>
+            <p id="modal-quiz-phonetic" class="text-xs text-slate-400 mb-4">[코르-푸스]</p>
+            <p class="text-xs font-bold text-slate-700 mb-3">이 라틴어 단어의 뜻은 무엇일까요?</p>
+            
+            <div id="modal-quiz-options" class="grid grid-cols-1 gap-2"></div>
+          </div>
+        </div>
+
+        <!-- 최종 골인 모달창 -->
+        <div id="board-finish-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border-4 border-amber-300 text-center animate-gentle">
+            <div class="text-5xl mb-2">🏆🚀🎉</div>
+            <h3 class="text-2xl font-black text-slate-800 mb-1">골인 성공!</h3>
+            <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+              모든 난관을 뚫고 우주 지도를 완주했어요!<br>아베 베룸 성가의 가사를 멋지게 익혔습니다.
+            </p>
+            <button onclick="restartBoardGame()" class="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-black text-sm shadow transition">
+              처음부터 다시 탐험하기 🚀
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <script>
+    /* =========================================================
+       1. 4개 성가 통합 데이터베이스
+    ========================================================= */
+    const SONGS_DB = {
+      salve: {
+        id: "salve",
+        title: "Salve Mater Misericordiae",
+        sub: "자비로우신 어머니, 하례하나이다",
+        badge: "제 1 곡 • 성모 찬미",
+        themeColor: "indigo",
+        audioSrc: "Salve Mater misericordiae.mp3",
+        defaultWebAudio: "https://upload.wikimedia.org/wikipedia/commons/e/ec/Salve_Regina_monasticum.ogg",
+        lyrics: `
+          <p class="font-bold text-indigo-900">[후렴] Salve mater misericórdiae, Mater Dei, et mater véniae, Mater spei, et mater grátiae, Mater plena sanctae laetítiae, O María!</p>
+          <p class="text-[11px] text-slate-600">자비로우신 어머니, 하느님의 어머니, 용서의 어머니, 하례하나이다. 희망의 어머니, 은총의 어머니, 거룩한 기쁨 가득하신 어머니, 오 마리아여!</p>
+          <p class="font-bold text-indigo-900 mt-2">[1절] Salve decus humáni géneris, Salve Virgo dígnior céteris, Quae vírgines omnes transgréderis, Et áltius sedes in súperis, O María!</p>
+          <p class="text-[11px] text-slate-600">인류의 영광이시여, 다른 모든 이보다 존귀하신 동정녀여, 하례하나이다. 모든 동정녀들을 능가하시며 천상 높은 곳에 좌정하신 분, 오 마리아여!</p>
+        `,
+        vocabs: [
+          { latin: "Salve", phonetic: "살-베", meaning: "안녕! / 하례하나이다", ctx: "Salve mater (어머니, 하례하나이다)" },
+          { latin: "Mater", phonetic: "마-테르", meaning: "어머니", ctx: "Mater Dei (하느님의 어머니)" },
+          { latin: "Misericordiae", phonetic: "미-세-리-코르-디-에", meaning: "자비의 / 너그러움의", ctx: "Salve mater misericordiae" },
+          { latin: "Dei", phonetic: "데-이", meaning: "하느님의", ctx: "Mater Dei (하느님의 어머니)" },
+          { latin: "Spes", phonetic: "스-페스", meaning: "희망", ctx: "Mater spei (희망의 어머니)" },
+          { latin: "Gratia", phonetic: "그라-치-아", meaning: "은총 / 은혜", ctx: "mater gratiae (은총의 어머니)" },
+          { latin: "Gaudium", phonetic: "가-우-디-움", meaning: "기쁨 / 환희", ctx: "tu Virgo, gaudium (동정녀여 기쁨이 되소서)" },
+          { latin: "Solatium", phonetic: "솔-라-치-움", meaning: "위로 / 안식", ctx: "nostrum solatium (저희의 위로)" }
+        ]
+      },
+      ubi: {
+        id: "ubi",
+        title: "Ubi Caritas",
+        sub: "자애와 사랑이 있는 곳에 하느님 계시도다",
+        badge: "제 2 곡 • 사랑의 성가",
+        themeColor: "emerald",
+        audioSrc: "ubi caritas.mp3",
+        defaultWebAudio: "https://upload.wikimedia.org/wikipedia/commons/e/ec/Salve_Regina_monasticum.ogg",
+        lyrics: `
+          <p class="font-bold text-emerald-900">[후렴] Ubi cáritas et amor, Deus ibi est. Congregávit nos in unum Christi amor.</p>
+          <p class="text-[11px] text-slate-600">자애와 사랑이 있는 곳에 하느님께서 계시도다. 그리스도의 사랑이 우리를 하나로 모으셨네.</p>
+          <p class="font-bold text-emerald-900 mt-2">[1절] Exsultémus, et in ipso jucundémur. Timeámus, et amémus Deum vivum. Et ex corde diligámus nos sincéro.</p>
+          <p class="text-[11px] text-slate-600">우리 기뻐하고 그분 안에서 즐거워하세. 살아 계신 하느님을 경외하고 사랑하며, 진실한 마음으로 서로 사랑하세.</p>
+        `,
+        vocabs: [
+          { latin: "Caritas", phonetic: "카-리-타스", meaning: "자애 / 사랑(아가페)", ctx: "Ubi caritas (자애가 있는 곳에)" },
+          { latin: "Amor", phonetic: "아-모르", meaning: "사랑", ctx: "Christi amor (그리스도의 사랑)" },
+          { latin: "Deus", phonetic: "데-우스", meaning: "하느님", ctx: "Deus ibi est (하느님께서 계시다)" },
+          { latin: "Ibi", phonetic: "이-비", meaning: "거기에", ctx: "Deus ibi est (거기에 하느님 계시네)" },
+          { latin: "Unum", phonetic: "우-눔", meaning: "하나 / 일치", ctx: "Congregavit nos in unum (우리를 하나로 모으셨네)" },
+          { latin: "Corde", phonetic: "코르-데", meaning: "마음으로", ctx: "ex corde sincero (진실한 마음으로)" },
+          { latin: "Sincero", phonetic: "신-체-로", meaning: "진실한 / 순수한", ctx: "ex corde sincero" },
+          { latin: "Christus", phonetic: "크-리스-투스", meaning: "그리스도", ctx: "in medio nostri sit Christus (우리 가운데 그리스도께서)" }
+        ]
+      },
+      adoremus: {
+        id: "adoremus",
+        title: "Adoremus in Aeternum",
+        sub: "지극히 거룩한 성체를 영원히 흠숭하나이다",
+        badge: "제 3 곡 • 성체 흠숭",
+        themeColor: "amber",
+        audioSrc: "Adoremus in æternum I.mp3",
+        defaultWebAudio: "https://upload.wikimedia.org/wikipedia/commons/e/ec/Salve_Regina_monasticum.ogg",
+        lyrics: `
+          <p class="font-bold text-amber-900">[후렴] Adorémus in aetérnum sanctíssimum Sacraméntum.</p>
+          <p class="text-[11px] text-slate-600">지극히 거룩하신 성체를 영원히 흠숭하나이다.</p>
+          <p class="font-bold text-amber-900 mt-2">[시편 117] Laudáte Dóminum omnes gentes: laudáte eum omnes pópuli. Quóniam confirmáta est super nos misericórdia ejus: et véritas Dómini manet in aetérnum.</p>
+          <p class="text-[11px] text-slate-600">모든 민족들아, 주님을 찬양하라. 모든 백성들아, 그분을 찬미하라. 우리를 향하신 그분의 자비가 크시며 주님의 진실하심은 영원하시도다.</p>
+        `,
+        vocabs: [
+          { latin: "Adoremus", phonetic: "아-도-레-무스", meaning: "흠숭하나이다 / 찬미합시다", ctx: "Adoremus in aeternum" },
+          { latin: "In aeternum", phonetic: "인 에-테르-눔", meaning: "영원히", ctx: "Adoremus in aeternum" },
+          { latin: "Sanctissimum", phonetic: "상-크-티-시-뭄", meaning: "지극히 거룩하신", ctx: "sanctissimum Sacramentum" },
+          { latin: "Sacramentum", phonetic: "사-크-라-멘-툼", meaning: "성사 / 성체", ctx: "sanctissimum Sacramentum" },
+          { latin: "Laudate", phonetic: "라-우-다-테", meaning: "찬양하라! / 찬미하라!", ctx: "Laudate Dominum (주님을 찬양하라)" },
+          { latin: "Dominum", phonetic: "도-미-눔", meaning: "주님을", ctx: "Laudate Dominum" },
+          { latin: "Veritas", phonetic: "베-리-타스", meaning: "진리 / 진실하심", ctx: "veritas Domini manet (주님의 진실하심)" },
+          { latin: "Gloria", phonetic: "글-로-리-아", meaning: "영광", ctx: "Gloria Patri (성부께 영광)" },
+          { latin: "Semper", phonetic: "셈-페르", meaning: "항상 / 언제나", ctx: "nunc, et semper (이제와 항상)" }
+        ]
+      },
+      ave: {
+        id: "ave",
+        title: "Ave Verum Corpus",
+        sub: "동정녀 마리아에게서 태어나신 참된 몸이시여",
+        badge: "제 4 곡 • 성체 찬미가",
+        themeColor: "rose",
+        audioSrc: "ave verum.mp3",
+        defaultWebAudio: "https://upload.wikimedia.org/wikipedia/commons/e/ec/Salve_Regina_monasticum.ogg",
+        lyrics: `
+          <p class="font-bold text-rose-900">Ave verum Corpus natum de María Vírgine: Vere passum, immolátum in cruce pro hómine:</p>
+          <p class="text-[11px] text-slate-600">동정녀 마리아에게서 태어나신 참된 몸이시여, 하례하나이다. 인간을 위하여 십자가 위에서 참으로 수난하시고 희생되신 분이시여.</p>
+          <p class="font-bold text-rose-900 mt-2">Cujus latus perforátum fluxit aqua et sánguine: Esto nobis praegustátum mortis in exámine. O Jesu dulcis! O Jesu pie! O Jesu fili Maríae.</p>
+          <p class="text-[11px] text-slate-600">꿰찔린 옆구리에서 물과 피를 흘리신 분이시여, 죽음의 시련 때에 저희에게 미리 맛봄이 되소서. 오 다정하신 예수님! 오 자애로우신 예수님! 오 마리아의 아들 예수님이시여.</p>
+        `,
+        vocabs: [
+          { latin: "Ave", phonetic: "아-베", meaning: "문안하나이다 / 하례하나이다", ctx: "Ave verum Corpus" },
+          { latin: "Verum", phonetic: "베-룸", meaning: "참된 / 진실한", ctx: "Ave verum Corpus" },
+          { latin: "Corpus", phonetic: "코르-푸스", meaning: "몸 / 성체", ctx: "Ave verum Corpus (참된 몸이시여)" },
+          { latin: "Natum", phonetic: "나-툼", meaning: "태어나신", ctx: "natum de Maria Virgine" },
+          { latin: "Virgine", phonetic: "비르-지-네", meaning: "동정녀", ctx: "de Maria Virgine (동정녀 마리아에게서)" },
+          { latin: "Cruce", phonetic: "크-루-체", meaning: "십자가", ctx: "in cruce pro homine (십자가 위에서)" },
+          { latin: "Aqua", phonetic: "아-쿠아", meaning: "물", ctx: "fluxit aqua et sanguine (물과 피를 흘리신)" },
+          { latin: "Sanguine", phonetic: "상-구이-네", meaning: "피", ctx: "fluxit aqua et sanguine" },
+          { latin: "Mortis", phonetic: "모르-티스", meaning: "죽음의", ctx: "mortis in examine (죽음의 시험 때에)" },
+          { latin: "Dulcis", phonetic: "둘-치스", meaning: "달콤한 / 다정하신", ctx: "O Jesu dulcis (오 다정하신 예수님)" }
+        ]
+      }
+    };
+
+    /* =========================================================
+       2. Web Audio API 자체 사운드 효과 (무설치 효과음)
+    ========================================================= */
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playSound(type) {
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      if (type === 'correct') {
+        // 딩동댕 밝은 차임
+        osc.frequency.setValueAtTime(523.25, now); // C5
+        osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+        osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+        osc.start(now);
+        osc.stop(now + 0.5);
+      } else if (type === 'wrong') {
+        // 낮은 띵
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(200, now);
+        osc.frequency.linearRampToValueAtTime(140, now + 0.3);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.linearRampToValueAtTime(0.001, now + 0.3);
+        osc.start(now);
+        osc.stop(now + 0.3);
+      } else if (type === 'rocket') {
+        // 로켓 발사 슈우웅~
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(250, now);
+        osc.frequency.exponentialRampToValueAtTime(1200, now + 0.6);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.6);
+        osc.start(now);
+        osc.stop(now + 0.6);
+      } else if (type === 'dice') {
+        // 주사위 톡톡
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(400, now);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+        osc.start(now);
+        osc.stop(now + 0.08);
+      }
+    }
+
+    /* =========================================================
+       3. 네비게이션 및 URL 해시 라우터
+    ========================================================= */
+    let currentSongId = "salve";
+
+    function navigateTo(dest) {
+      window.location.hash = dest === 'hub' ? '' : dest;
+      renderRoute();
+    }
+
+    function renderRoute() {
+      const hash = window.location.hash.replace('#', '').toLowerCase();
+      const viewHub = document.getElementById('view-hub');
+      const viewSong = document.getElementById('view-song');
+
+      if (hash && SONGS_DB[hash]) {
+        currentSongId = hash;
+        viewHub.classList.add('hidden');
+        viewSong.classList.remove('hidden');
+        loadSongData(hash);
+      } else {
+        viewHub.classList.remove('hidden');
+        viewSong.classList.add('hidden');
+        pauseChantAudio();
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      lucide.createIcons();
+    }
+
+    window.addEventListener('hashchange', renderRoute);
+    window.addEventListener('DOMContentLoaded', () => {
+      renderRoute();
+      lucide.createIcons();
+    });
+
+    function copyCurrentLink() {
+      const shareUrl = window.location.href;
+      const btnText = document.getElementById('share-btn-text');
+      
+      const tempInput = document.createElement('input');
+      tempInput.value = shareUrl;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+
+      btnText.innerText = "복사 완료! 👍";
+      setTimeout(() => {
+        btnText.innerText = "링크 복사";
+      }, 2000);
+    }
+
+    /* =========================================================
+       4. 곡 데이터 로딩 & 탭 전환
+    ========================================================= */
+    function loadSongData(songId) {
+      const song = SONGS_DB[songId];
+      if (!song) return;
+
+      document.getElementById('song-badge').innerText = song.badge;
+      document.getElementById('song-title').innerText = song.title;
+      document.getElementById('song-sub').innerText = song.sub;
+      document.getElementById('song-full-lyrics').innerHTML = song.lyrics;
+
+      // 단어장 카드 렌더링
+      const vocabContainer = document.getElementById('vocab-cards-container');
+      vocabContainer.innerHTML = '';
+      song.vocabs.forEach((v, idx) => {
+        const div = document.createElement('div');
+        div.className = "bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm flex items-start justify-between hover:border-indigo-300 transition";
+        div.innerHTML = `
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-slate-400 font-mono">#${idx + 1}</span>
+              <h5 class="text-base font-black text-indigo-950 latin-font">${v.latin}</h5>
+              <span class="text-xs text-indigo-500 font-sans">[${v.phonetic}]</span>
+            </div>
+            <p class="text-sm font-bold text-slate-800 mt-1">${v.meaning}</p>
+            <p class="text-[11px] text-slate-500 mt-0.5">${v.ctx}</p>
+          </div>
+          <button onclick="speakLatin('${v.latin}')" class="p-2 bg-slate-100 hover:bg-indigo-100 text-indigo-600 rounded-xl transition shrink-0 ml-2" title="발음 듣기">
+            <i data-lucide="volume-2" class="w-4 h-4"></i>
+          </button>
+        `;
+        vocabContainer.appendChild(div);
+      });
+
+      // 오디오 설정
+      setupAudioForSong(song);
+
+      // 기본적으로 단어장 탭으로 초기화
+      switchSongTab('study');
+
+      // 게임 초기화
+      initGameForSong(songId);
+      lucide.createIcons();
+    }
+
+    function switchSongTab(tab) {
+      const studyTab = document.getElementById('tab-btn-study');
+      const gameTab = document.getElementById('tab-btn-game');
+      const studyView = document.getElementById('song-tab-study');
+      const gameView = document.getElementById('song-tab-game');
+
+      if (tab === 'study') {
+        studyTab.className = "flex-1 py-2 text-xs sm:text-sm rounded-xl font-black flex items-center justify-center gap-1.5 bg-indigo-600 text-white shadow transition";
+        gameTab.className = "flex-1 py-2 text-xs sm:text-sm rounded-xl font-black flex items-center justify-center gap-1.5 text-slate-600 hover:text-indigo-600 transition";
+        studyView.classList.remove('hidden');
+        gameView.classList.add('hidden');
+      } else {
+        gameTab.className = "flex-1 py-2 text-xs sm:text-sm rounded-xl font-black flex items-center justify-center gap-1.5 bg-indigo-600 text-white shadow transition";
+        studyTab.className = "flex-1 py-2 text-xs sm:text-sm rounded-xl font-black flex items-center justify-center gap-1.5 text-slate-600 hover:text-indigo-600 transition";
+        studyView.classList.add('hidden');
+        gameView.classList.remove('hidden');
+      }
+      lucide.createIcons();
+    }
+
+    function initGameForSong(songId) {
+      document.getElementById('game-salve').classList.add('hidden');
+      document.getElementById('game-ubi').classList.add('hidden');
+      document.getElementById('game-adoremus').classList.add('hidden');
+      document.getElementById('game-ave').classList.add('hidden');
+
+      if (songId === 'salve') {
+        document.getElementById('game-salve').classList.remove('hidden');
+        initSalveGame();
+      } else if (songId === 'ubi') {
+        document.getElementById('game-ubi').classList.remove('hidden');
+        initUbiMemoryGame();
+      } else if (songId === 'adoremus') {
+        document.getElementById('game-adoremus').classList.remove('hidden');
+        initAdoremusBingo();
+      } else if (songId === 'ave') {
+        document.getElementById('game-ave').classList.remove('hidden');
+        initAveBoardGame();
+      }
+    }
+
+    /* =========================================================
+       5. 오디오 플레이어 로직
+    ========================================================= */
+    const chantAudio = document.getElementById('chant-audio');
+    const playBtn = document.getElementById('play-btn');
+    const playIcon = document.getElementById('play-icon');
+    const progressBar = document.getElementById('audio-progress');
+    const currentTimeEl = document.getElementById('current-time');
+    const totalDurationEl = document.getElementById('total-duration');
+    const audioTitleEl = document.getElementById('audio-title');
+    const audioStatusEl = document.getElementById('audio-status');
+
+    function setupAudioForSong(song) {
+      pauseChantAudio();
+      audioTitleEl.innerText = song.title;
+      audioStatusEl.innerText = `음원 연결 중... (${song.audioSrc})`;
+      chantAudio.src = song.audioSrc;
+      chantAudio.onerror = () => {
+        if (chantAudio.src.indexOf('wikimedia') === -1) {
+          chantAudio.src = song.defaultWebAudio;
+          audioStatusEl.innerText = "온라인 스트림 연결됨 (내 MP3 열기 지원)";
+        }
+      };
+    }
+
+    function togglePlay() {
+      if (chantAudio.paused) {
+        chantAudio.play().then(() => {
+          updatePlayUI(true);
+        }).catch(() => {
+          audioStatusEl.innerText = "재생 버튼을 누르거나 MP3를 열어주세요";
+        });
+      } else {
+        chantAudio.pause();
+        updatePlayUI(false);
+      }
+    }
+
+    function pauseChantAudio() {
+      if (!chantAudio.paused) {
+        chantAudio.pause();
+      }
+      updatePlayUI(false);
+    }
+
+    function updatePlayUI(isPlaying) {
+      if (isPlaying) {
+        playBtn.innerHTML = `<i data-lucide="pause" class="w-5 h-5 fill-current"></i>`;
+        audioStatusEl.innerText = "성가 찬미 중... 🎶";
+      } else {
+        playBtn.innerHTML = `<i data-lucide="play" class="w-5 h-5 fill-current"></i>`;
+        audioStatusEl.innerText = "일시 정지됨";
+      }
+      lucide.createIcons();
+    }
+
+    function skipAudio(sec) {
+      chantAudio.currentTime = Math.max(0, Math.min(chantAudio.duration || 0, chantAudio.currentTime + sec));
+    }
+
+    function onAudioTimeUpdate() {
+      if (!chantAudio.duration) return;
+      progressBar.value = (chantAudio.currentTime / chantAudio.duration) * 100;
+      currentTimeEl.innerText = fmtTime(chantAudio.currentTime);
+    }
+
+    function onAudioMetadataLoaded() {
+      totalDurationEl.innerText = fmtTime(chantAudio.duration);
+    }
+
+    function onAudioEnded() {
+      updatePlayUI(false);
+      progressBar.value = 0;
+      currentTimeEl.innerText = "00:00";
+    }
+
+    function seekAudio(e) {
+      if (!chantAudio.duration) return;
+      chantAudio.currentTime = (e.target.value / 100) * chantAudio.duration;
+    }
+
+    function fmtTime(sec) {
+      if (isNaN(sec)) return "00:00";
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function setSpeed(sp) {
+      chantAudio.playbackRate = sp;
+      document.querySelectorAll('.speed-btn').forEach(btn => {
+        if (parseFloat(btn.getAttribute('data-speed')) === sp) {
+          btn.className = "speed-btn px-2 py-0.5 text-xs font-bold rounded-lg border bg-indigo-600 text-white shadow-sm";
+        } else {
+          btn.className = "speed-btn px-2 py-0.5 text-xs font-bold rounded-lg border bg-white text-slate-600";
+        }
+      });
+    }
+
+    function changeVolume(e) {
+      chantAudio.volume = e.target.value;
+      const icon = document.getElementById('volume-icon');
+      icon.setAttribute('data-lucide', chantAudio.volume === 0 ? 'volume-x' : 'volume-2');
+      lucide.createIcons();
+    }
+
+    function toggleMute() {
+      chantAudio.muted = !chantAudio.muted;
+      const icon = document.getElementById('volume-icon');
+      icon.setAttribute('data-lucide', chantAudio.muted ? 'volume-x' : 'volume-2');
+      lucide.createIcons();
+    }
+
+    function handleAudioUpload(e) {
+      const file = e.target.files[0];
+      if (file) {
+        chantAudio.src = URL.createObjectURL(file);
+        audioTitleEl.innerText = file.name;
+        audioStatusEl.innerText = "내 MP3 파일 연결됨";
+        chantAudio.play().then(() => updatePlayUI(true)).catch(() => {});
+      }
+    }
+
+    function speakLatin(text) {
+      if (!('speechSynthesis' in window)) return;
+      const utt = new SpeechSynthesisUtterance(text);
+      utt.lang = 'it-IT';
+      utt.rate = 0.85;
+      window.speechSynthesis.speak(utt);
+    }
+
+    /* =========================================================
+       6. 게임 1: 살베 마테르 (플립카드 & 4지선다 스피드 퀴즈)
+    ========================================================= */
+    let salveCardIdx = 0;
+    let salveIsFlipped = false;
+    let salveScore = 0;
+    let salveQuizIdx = 0;
+
+    function initSalveGame() {
+      salveCardIdx = 0;
+      salveScore = 0;
+      salveQuizIdx = 0;
+      document.getElementById('salve-quiz-score').innerHTML = `<i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i> 점수: 0`;
+      renderSalveCard();
+      renderSalveQuiz();
+    }
+
+    function flipSalveCard() {
+      salveIsFlipped = !salveIsFlipped;
+      const inner = document.getElementById('salve-card-inner');
+      if (salveIsFlipped) inner.classList.add('card-flipped');
+      else inner.classList.remove('card-flipped');
+    }
+
+    function salveCardNav(delta) {
+      const vocabs = SONGS_DB.salve.vocabs;
+      salveCardIdx = (salveCardIdx + delta + vocabs.length) % vocabs.length;
+      salveIsFlipped = false;
+      document.getElementById('salve-card-inner').classList.remove('card-flipped');
+      renderSalveCard();
+    }
+
+    function renderSalveCard() {
+      const v = SONGS_DB.salve.vocabs[salveCardIdx];
+      document.getElementById('salve-card-latin').innerText = v.latin;
+      document.getElementById('salve-card-phonetic').innerText = `[${v.phonetic}]`;
+      document.getElementById('salve-card-meaning').innerText = v.meaning;
+      document.getElementById('salve-card-ctx').innerText = v.ctx;
+      document.getElementById('salve-card-page').innerText = `${salveCardIdx + 1}/${SONGS_DB.salve.vocabs.length}`;
+      lucide.createIcons();
+    }
+
+    function renderSalveQuiz() {
+      const vocabs = SONGS_DB.salve.vocabs;
+      const q = vocabs[salveQuizIdx % vocabs.length];
+      document.getElementById('salve-quiz-word').innerText = q.latin;
+      document.getElementById('salve-quiz-phonetic').innerText = `[${q.phonetic}]`;
+      document.getElementById('salve-quiz-feedback').innerHTML = '';
+
+      let options = [q.meaning];
+      const others = vocabs.filter(item => item.meaning !== q.meaning).sort(() => 0.5 - Math.random());
+      for (let i = 0; i < 3 && i < others.length; i++) options.push(others[i].meaning);
+      options.sort(() => 0.5 - Math.random());
+
+      const container = document.getElementById('salve-quiz-options');
+      container.innerHTML = '';
+      container.classList.remove('pointer-events-none');
+
+      options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = "w-full py-2.5 px-3 text-xs sm:text-sm font-bold rounded-xl border border-slate-200 bg-slate-50 hover:bg-indigo-50 text-slate-700 transition";
+        btn.innerText = opt;
+        btn.onclick = () => {
+          container.classList.add('pointer-events-none');
+          if (opt === q.meaning) {
+            playSound('correct');
+            btn.className = "w-full py-2.5 px-3 text-xs sm:text-sm font-bold rounded-xl bg-emerald-500 text-white shadow";
+            salveScore += 10;
+            document.getElementById('salve-quiz-score').innerHTML = `<i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i> 점수: ${salveScore}`;
+            document.getElementById('salve-quiz-feedback').innerHTML = `<span class="text-emerald-600">🎉 정답입니다! 멋져요!</span>`;
+            confetti({ particleCount: 25, spread: 60, origin: { y: 0.8 } });
+          } else {
+            playSound('wrong');
+            btn.className = "w-full py-2.5 px-3 text-xs sm:text-sm font-bold rounded-xl bg-rose-500 text-white";
+            document.getElementById('salve-quiz-feedback').innerHTML = `<span class="text-rose-500">아쉬워요! 정답은 '<b>${q.meaning}</b>'입니다.</span>`;
+          }
+          setTimeout(() => {
+            salveQuizIdx++;
+            renderSalveQuiz();
+          }, 1200);
+        };
+        container.appendChild(btn);
+      });
+    }
+
+    /* =========================================================
+       7. 게임 2: 우비 카리타스 (카드 매칭 짝맞추기 게임)
+    ========================================================= */
+    let ubiCards = [];
+    let ubiFlipped = [];
+    let ubiMatchedCount = 0;
+
+    function initUbiMemoryGame() {
+      const vocabs = SONGS_DB.ubi.vocabs.slice(0, 6);
+      ubiMatchedCount = 0;
+      ubiFlipped = [];
+      document.getElementById('ubi-match-count').innerText = `맞춘 짝: 0/6`;
+      document.getElementById('ubi-win-banner').classList.add('hidden');
+
+      let deck = [];
+      vocabs.forEach((v, idx) => {
+        deck.push({ id: `latin-${idx}`, pairId: idx, text: v.latin, sub: `[${v.phonetic}]`, type: 'latin' });
+        deck.push({ id: `meaning-${idx}`, pairId: idx, text: v.meaning, sub: '한국어 뜻', type: 'meaning' });
+      });
+      deck.sort(() => 0.5 - Math.random());
+      ubiCards = deck;
+
+      const grid = document.getElementById('ubi-grid');
+      grid.innerHTML = '';
+      deck.forEach((card, index) => {
+        const btn = document.createElement('button');
+        btn.id = `memory-card-${index}`;
+        btn.className = "memory-card h-24 sm:h-28 rounded-2xl bg-white border-2 border-emerald-200 shadow-sm flex flex-col items-center justify-center p-2 text-center hover:border-emerald-400 transition cursor-pointer select-none";
+        btn.innerHTML = `<span class="text-2xl text-emerald-400">❓</span><span class="text-[10px] text-slate-400 font-bold mt-1">뒤집기</span>`;
+        btn.onclick = () => flipUbiCard(index, card, btn);
+        grid.appendChild(btn);
+      });
+    }
+
+    function flipUbiCard(index, card, btn) {
+      if (ubiFlipped.length >= 2 || btn.classList.contains('is-flipped') || btn.classList.contains('is-matched')) return;
+
+      playSound('dice');
+      btn.classList.add('is-flipped');
+      btn.classList.remove('bg-white');
+      btn.classList.add(card.type === 'latin' ? 'bg-emerald-50' : 'bg-teal-50', 'border-emerald-500');
+      btn.innerHTML = `
+        <span class="text-xs sm:text-sm font-black text-slate-800 ${card.type === 'latin' ? 'latin-font text-emerald-950 font-bold' : ''}">${card.text}</span>
+        <span class="text-[10px] text-slate-500 mt-1">${card.sub}</span>
+      `;
+
+      ubiFlipped.push({ index, card, btn });
+
+      if (ubiFlipped.length === 2) {
+        const [first, second] = ubiFlipped;
+        if (first.card.pairId === second.card.pairId && first.card.type !== second.card.type) {
+          // 일치!
+          playSound('correct');
+          first.btn.classList.add('is-matched');
+          second.btn.classList.add('is-matched');
+          ubiMatchedCount++;
+          document.getElementById('ubi-match-count').innerText = `맞춘 짝: ${ubiMatchedCount}/6`;
+          confetti({ particleCount: 20, spread: 50, origin: { y: 0.7 } });
+          ubiFlipped = [];
+
+          if (ubiMatchedCount === 6) {
+            document.getElementById('ubi-win-banner').classList.remove('hidden');
+            confetti({ particleCount: 80, spread: 100, origin: { y: 0.6 } });
+          }
+        } else {
+          // 불일치
+          playSound('wrong');
+          setTimeout(() => {
+            [first, second].forEach(item => {
+              item.btn.classList.remove('is-flipped', 'bg-emerald-50', 'bg-teal-50', 'border-emerald-500');
+              item.btn.classList.add('bg-white');
+              item.btn.innerHTML = `<span class="text-2xl text-emerald-400">❓</span><span class="text-[10px] text-slate-400 font-bold mt-1">뒤집기</span>`;
+            });
+            ubiFlipped = [];
+          }, 900);
+        }
+      }
+    }
+
+    /* =========================================================
+       8. 게임 3: 아도레무스 (3x3 라틴어 빙고 게임)
+    ========================================================= */
+    let bingoGridData = [];
+    let bingoMarked = [];
+    let bingoTarget = null;
+    let bingoRemainingTargets = [];
+
+    function initAdoremusBingo() {
+      const vocabs = [...SONGS_DB.adoremus.vocabs].slice(0, 9);
+      vocabs.sort(() => 0.5 - Math.random());
+      bingoGridData = vocabs;
+      bingoMarked = Array(9).fill(false);
+      bingoRemainingTargets = [...vocabs].sort(() => 0.5 - Math.random());
+
+      document.getElementById('bingo-lines-count').innerText = `빙고: 0줄`;
+      document.getElementById('bingo-win-msg').classList.add('hidden');
+
+      renderBingoBoard();
+      pickNextBingoTarget();
+    }
+
+    function renderBingoBoard() {
+      const grid = document.getElementById('bingo-grid');
+      grid.innerHTML = '';
+      bingoGridData.forEach((v, idx) => {
+        const cell = document.createElement('button');
+        cell.id = `bingo-cell-${idx}`;
+        cell.className = "h-20 sm:h-24 rounded-2xl bg-white border-2 border-amber-200 flex flex-col items-center justify-center p-1 text-center hover:border-amber-400 shadow-sm transition active:scale-95";
+        cell.innerHTML = `
+          <span class="text-xs sm:text-sm font-black text-amber-950 latin-font">${v.latin}</span>
+          <span class="text-[10px] text-amber-600">[${v.phonetic}]</span>
+        `;
+        cell.onclick = () => onBingoCellClick(idx, v, cell);
+        grid.appendChild(cell);
+      });
+    }
+
+    function pickNextBingoTarget() {
+      if (bingoRemainingTargets.length === 0) {
+        document.getElementById('bingo-target-meaning').innerText = "모든 단어를 맞췄어요! 🎉";
+        return;
+      }
+      bingoTarget = bingoRemainingTargets.pop();
+      document.getElementById('bingo-target-meaning').innerText = bingoTarget.meaning;
+    }
+
+    function onBingoCellClick(idx, vocab, cell) {
+      if (bingoMarked[idx] || !bingoTarget) return;
+
+      if (vocab.latin === bingoTarget.latin) {
+        // 정답!
+        playSound('correct');
+        bingoMarked[idx] = true;
+        cell.className = "h-20 sm:h-24 rounded-2xl bg-amber-500 text-white border-2 border-amber-600 flex flex-col items-center justify-center p-1 text-center shadow-inner scale-95 transition pointer-events-none";
+        cell.innerHTML = `
+          <span class="text-xl">⭐</span>
+          <span class="text-xs font-black">${vocab.latin}</span>
+        `;
+        checkBingoLines();
+        pickNextBingoTarget();
+      } else {
+        // 오답
+        playSound('wrong');
+        cell.classList.add('bg-rose-100', 'border-rose-400');
+        setTimeout(() => {
+          cell.classList.remove('bg-rose-100', 'border-rose-400');
+        }, 500);
+      }
+    }
+
+    function checkBingoLines() {
+      const lines = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], // 가로
+        [0, 3, 6], [1, 4, 7], [2, 5, 8], // 세로
+        [0, 4, 8], [2, 4, 6]             // 대각선
+      ];
+      let completedLines = 0;
+      lines.forEach(l => {
+        if (bingoMarked[l[0]] && bingoMarked[l[1]] && bingoMarked[l[2]]) {
+          completedLines++;
+        }
+      });
+      document.getElementById('bingo-lines-count').innerText = `빙고: ${completedLines}줄`;
+
+      if (completedLines >= 1 && document.getElementById('bingo-win-msg').classList.contains('hidden')) {
+        document.getElementById('bingo-win-msg').classList.remove('hidden');
+        confetti({ particleCount: 70, spread: 80, origin: { y: 0.6 } });
+      }
+    }
+
+    /* =========================================================
+       9. 게임 4: 아베 베룸 (주사위 & 로켓 보드게임 지도 탐험)
+    ========================================================= */
+    const TOTAL_STEPS = 15; // 0번 출발 ~ 15번 도착
+    let playerStep = 0;
+    let isDiceRolling = false;
+    let lastRolledNumber = 1;
+
+    function initAveBoardGame() {
+      playerStep = 0;
+      isDiceRolling = false;
+      document.getElementById('board-player-step').innerText = `0`;
+      document.getElementById('board-game-feedback').innerHTML = `주사위를 굴려서 탐험을 시작해보세요! 🚀`;
+      document.getElementById('board-finish-modal').classList.add('hidden');
+      document.getElementById('board-quiz-modal').classList.add('hidden');
+      renderBoardTrack();
+    }
+
+    function renderBoardTrack() {
+      const track = document.getElementById('board-track');
+      track.innerHTML = '';
+      const vocabs = SONGS_DB.ave.vocabs;
+
+      for (let i = 0; i <= TOTAL_STEPS; i++) {
+        const cell = document.createElement('div');
+        cell.id = `track-cell-${i}`;
+        const isPlayerHere = (playerStep === i);
+        const vocabItem = vocabs[(i - 1 + vocabs.length) % vocabs.length];
+
+        let cellContent = '';
+        if (i === 0) {
+          cellContent = `<span class="text-xs font-black text-slate-500">출발 🚩</span>`;
+        } else if (i === TOTAL_STEPS) {
+          cellContent = `<span class="text-xs font-black text-amber-600">골인 🏆</span>`;
+        } else {
+          cellContent = `<span class="text-[10px] font-bold text-rose-900 latin-font truncate px-0.5">${vocabItem.latin}</span>`;
+        }
+
+        cell.className = `h-16 rounded-2xl border-2 flex flex-col items-center justify-center relative p-1 transition-all ${
+          isPlayerHere 
+            ? 'bg-rose-500 text-white border-rose-600 shadow-md scale-105 z-10' 
+            : 'bg-white border-rose-200 text-slate-700'
+        }`;
+
+        cell.innerHTML = `
+          <span class="text-[9px] opacity-60 font-mono absolute top-1 left-1.5">${i}</span>
+          ${isPlayerHere ? '<span class="text-xl animate-bounce">🚀</span>' : cellContent}
+        `;
+        track.appendChild(cell);
+      }
+    }
+
+    function rollDice() {
+      if (isDiceRolling || playerStep >= TOTAL_STEPS) return;
+      isDiceRolling = true;
+
+      const diceBtn = document.getElementById('dice-roll-btn');
+      const diceFace = document.getElementById('dice-face');
+      const faces = ['⚀', '⚁', '⚂', '⚃'];
+      
+      let count = 0;
+      const interval = setInterval(() => {
+        playSound('dice');
+        const r = Math.floor(Math.random() * 4) + 1; // 1 ~ 4칸
+        diceFace.innerText = faces[r - 1];
+        lastRolledNumber = r;
+        count++;
+        if (count > 8) {
+          clearInterval(interval);
+          isDiceRolling = false;
+          onDiceResult(lastRolledNumber);
+        }
+      }, 70);
+    }
+
+    function onDiceResult(number) {
+      document.getElementById('board-game-feedback').innerHTML = `🎲 주사위에서 <b>${number}</b>가 나왔어요! 말 이동 중...`;
+      
+      // 단계별 전진 애니메이션
+      let targetStep = Math.min(TOTAL_STEPS, playerStep + number);
+      let currentMove = playerStep;
+
+      const moveInterval = setInterval(() => {
+        if (currentMove < targetStep) {
+          currentMove++;
+          playerStep = currentMove;
+          document.getElementById('board-player-step').innerText = playerStep;
+          renderBoardTrack();
+        } else {
+          clearInterval(moveInterval);
+          if (playerStep >= TOTAL_STEPS) {
+            // 골인!
+            confetti({ particleCount: 100, spread: 100, origin: { y: 0.6 } });
+            document.getElementById('board-finish-modal').classList.remove('hidden');
+          } else {
+            // 도착 칸의 단어 퀴즈 출제!
+            openBoardQuizModal();
+          }
+        }
+      }, 250);
+    }
+
+    function openBoardQuizModal() {
+      const vocabs = SONGS_DB.ave.vocabs;
+      const currentVocab = vocabs[(playerStep - 1 + vocabs.length) % vocabs.length];
+
+      document.getElementById('modal-quiz-word').innerText = currentVocab.latin;
+      document.getElementById('modal-quiz-phonetic').innerText = `[${currentVocab.phonetic}]`;
+
+      let options = [currentVocab.meaning];
+      const others = vocabs.filter(v => v.meaning !== currentVocab.meaning).sort(() => 0.5 - Math.random());
+      for (let i = 0; i < 2 && i < others.length; i++) options.push(others[i].meaning);
+      options.sort(() => 0.5 - Math.random());
+
+      const container = document.getElementById('modal-quiz-options');
+      container.innerHTML = '';
+      
+      options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = "w-full py-2.5 px-3 text-xs sm:text-sm font-black rounded-xl border border-slate-200 bg-slate-50 hover:bg-rose-50 text-slate-800 transition";
+        btn.innerText = opt;
+        btn.onclick = () => onBoardQuizAnswer(opt === currentVocab.meaning, currentVocab.meaning);
+        container.appendChild(btn);
+      });
+
+      document.getElementById('board-quiz-modal').classList.remove('hidden');
+    }
+
+    function onBoardQuizAnswer(isCorrect, correctMeaning) {
+      const modal = document.getElementById('board-quiz-modal');
+      modal.classList.add('hidden');
+
+      if (isCorrect) {
+        // 정답! 로케트 발사 고속 점프!
+        playSound('rocket');
+        confetti({ particleCount: 40, spread: 60, origin: { y: 0.5 } });
+        
+        const jumpBonus = lastRolledNumber; // 나온 수만큼 로켓 점프!
+        document.getElementById('board-game-feedback').innerHTML = `
+          <span class="text-rose-600 font-extrabold">🚀 정답이에요! 로케트 발사! 주사위 나온 수(+${jumpBonus})만큼 앞으로 초고속 점프합니다!</span>
+        `;
+        
+        playerStep = Math.min(TOTAL_STEPS, playerStep + jumpBonus);
+        document.getElementById('board-player-step').innerText = playerStep;
+        renderBoardTrack();
+
+        if (playerStep >= TOTAL_STEPS) {
+          setTimeout(() => {
+            confetti({ particleCount: 100, spread: 100, origin: { y: 0.6 } });
+            document.getElementById('board-finish-modal').classList.remove('hidden');
+          }, 800);
+        }
+      } else {
+        // 오답 피드백: 아쉬워요 걸어서 한 칸 뒤로
+        playSound('wrong');
+        document.getElementById('board-game-feedback').innerHTML = `
+          <span class="text-slate-600">아쉬워요~ 정답은 '<b>${correctMeaning}</b>'였어요! 🚶 걸어서 한 칸 뒤로 이동합니다.</span>
+        `;
+        playerStep = Math.max(0, playerStep - 1);
+        document.getElementById('board-player-step').innerText = playerStep;
+        renderBoardTrack();
+
+        // 1초 후 뒤로 간 칸의 문제 다시 도전
+        if (playerStep > 0) {
+          setTimeout(() => {
+            openBoardQuizModal();
+          }, 1200);
+        }
+      }
+    }
+
+    function restartBoardGame() {
+      document.getElementById('board-finish-modal').classList.add('hidden');
+      initAveBoardGame();
+    }
+  </script>
+</body>
+</html>
