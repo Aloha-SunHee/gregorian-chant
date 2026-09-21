@@ -61,15 +61,6 @@
     .animate-gentle {
       animation: gentle-bounce 2s infinite ease-in-out;
     }
-    @keyframes rocket-dash {
-      0% { transform: translateY(0) scale(1); }
-      50% { transform: translateY(-20px) scale(1.2) rotate(15deg); }
-      100% { transform: translateY(0) scale(1); }
-    }
-    .animate-rocket {
-      animation: rocket-dash 0.8s ease-in-out;
-    }
-    /* 카드 매칭 트랜지션 */
     .memory-card {
       transition: all 0.3s ease;
       transform-style: preserve-3d;
@@ -90,12 +81,10 @@
       <span>성가대 라틴어 모험</span>
     </button>
     <div class="flex items-center gap-2">
-      <!-- 현재 곡 링크 공유 버튼 -->
       <button id="share-link-btn" onclick="copyCurrentLink()" class="px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl text-xs font-bold transition flex items-center gap-1 border border-indigo-200" title="이 곡의 주소 복사하기">
         <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
         <span id="share-btn-text" class="hidden sm:inline">링크 복사</span>
       </button>
-      <!-- 홈으로 가기 버튼 -->
       <button onclick="navigateTo('hub')" class="px-3 py-1.5 bg-amber-400 hover:bg-amber-500 text-amber-950 rounded-xl text-xs font-black transition flex items-center gap-1 shadow-sm">
         <i data-lucide="home" class="w-4 h-4"></i>
         <span>곡 목록</span>
@@ -103,10 +92,7 @@
     </div>
   </nav>
 
-
-  <!-- ================================================================= -->
-  <!-- 1. 메인 허브 화면 (Hub View) -->
-  <!-- ================================================================= -->
+  <!-- 1. 메인 허브 화면 -->
   <section id="view-hub" class="w-full max-w-2xl flex flex-col items-center text-center">
     <div class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-amber-100/90 border border-amber-300 rounded-full text-amber-900 text-xs sm:text-sm font-bold mb-3 shadow-sm">
       <span>🎼 즐겁게 부르고 신나게 맞추는 그레고리안 성가 4선</span>
@@ -120,8 +106,7 @@
 
     <!-- 4개 곡 바로가기 카드 그리드 -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full px-1">
-      
-      <!-- 카드 1: Salve Mater -->
+      <!-- Salve Mater -->
       <div onclick="navigateTo('salve')" class="cursor-pointer group bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl p-5 text-white text-left shadow-lg hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between relative overflow-hidden border-2 border-indigo-300/40">
         <div class="absolute -right-4 -bottom-4 text-7xl opacity-20 group-hover:scale-110 transition-transform">✨</div>
         <div>
@@ -137,7 +122,7 @@
         </div>
       </div>
 
-      <!-- 카드 2: Ubi Caritas -->
+      <!-- Ubi Caritas -->
       <div onclick="navigateTo('ubi')" class="cursor-pointer group bg-gradient-to-br from-emerald-500 to-teal-600 rounded-3xl p-5 text-white text-left shadow-lg hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between relative overflow-hidden border-2 border-emerald-300/40">
         <div class="absolute -right-4 -bottom-4 text-7xl opacity-20 group-hover:scale-110 transition-transform">💖</div>
         <div>
@@ -153,7 +138,7 @@
         </div>
       </div>
 
-      <!-- 카드 3: Adoremus in Aeternum -->
+      <!-- Adoremus in Aeternum -->
       <div onclick="navigateTo('adoremus')" class="cursor-pointer group bg-gradient-to-br from-amber-500 to-orange-600 rounded-3xl p-5 text-white text-left shadow-lg hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between relative overflow-hidden border-2 border-amber-300/40">
         <div class="absolute -right-4 -bottom-4 text-7xl opacity-20 group-hover:scale-110 transition-transform">👑</div>
         <div>
@@ -169,7 +154,7 @@
         </div>
       </div>
 
-      <!-- 카드 4: Ave Verum Corpus -->
+      <!-- Ave Verum Corpus -->
       <div onclick="navigateTo('ave')" class="cursor-pointer group bg-gradient-to-br from-rose-500 to-pink-600 rounded-3xl p-5 text-white text-left shadow-lg hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between relative overflow-hidden border-2 border-rose-300/40">
         <div class="absolute -right-4 -bottom-4 text-7xl opacity-20 group-hover:scale-110 transition-transform">🚀</div>
         <div>
@@ -184,28 +169,11 @@
           <span class="w-8 h-8 rounded-full bg-white text-rose-600 flex items-center justify-center font-bold shadow-md group-hover:translate-x-1 transition">➔</span>
         </div>
       </div>
-
-    </div>
-
-    <!-- 공유 및 안내 도움말 박스 -->
-    <div class="mt-8 bg-white/80 border border-slate-200 rounded-2xl p-4 w-full text-left text-xs text-slate-600 shadow-sm flex items-start gap-3">
-      <span class="text-2xl shrink-0">📱</span>
-      <div>
-        <p class="font-bold text-indigo-950 text-sm mb-1">성가대 단체 채팅방 공유 꿀팁!</p>
-        <p class="leading-relaxed">
-          주소 뒤에 <code class="bg-slate-100 px-1.5 py-0.5 rounded text-indigo-700 font-mono font-bold">#salve</code>, <code class="bg-slate-100 px-1.5 py-0.5 rounded text-emerald-700 font-mono font-bold">#ubi</code>, <code class="bg-slate-100 px-1.5 py-0.5 rounded text-amber-700 font-mono font-bold">#adoremus</code>, <code class="bg-slate-100 px-1.5 py-0.5 rounded text-rose-700 font-mono font-bold">#ave</code> 를 붙이면 바로 원하는 곡 화면이 열립니다. 각 곡 화면의 <b>[링크 복사]</b> 버튼을 누르면 링크가 복사됩니다!
-        </p>
-      </div>
     </div>
   </section>
 
-
-  <!-- ================================================================= -->
-  <!-- 2. 곡 상세 화면 템플릿 영역 (Song Detail View) -->
-  <!-- ================================================================= -->
+  <!-- 2. 곡 상세 화면 -->
   <section id="view-song" class="w-full max-w-2xl hidden flex-col items-center text-center">
-    
-    <!-- 곡 헤더 -->
     <div class="mb-3">
       <span id="song-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800 border border-indigo-200">
         제 1 곡 • 성모 찬미
@@ -218,7 +186,7 @@
       </p>
     </div>
 
-    <!-- 공통 고성능 성가 오디오 플레이어 위젯 -->
+    <!-- 오디오 플레이어 -->
     <div class="w-full bg-white/95 rounded-3xl p-4 shadow-lg border-2 border-slate-200 text-left mb-4">
       <div class="flex items-center justify-between gap-2 mb-2">
         <div class="flex items-center gap-2.5 overflow-hidden">
@@ -231,7 +199,6 @@
           </div>
         </div>
 
-        <!-- 음원 직접 파일 열기 버튼 -->
         <label class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded-xl text-xs font-bold transition shadow-sm shrink-0">
           <i data-lucide="upload" class="w-3.5 h-3.5"></i>
           <span>내 MP3 열기</span>
@@ -239,10 +206,8 @@
         </label>
       </div>
 
-      <!-- 오디오 태그 -->
       <audio id="chant-audio" preload="metadata" ontimeupdate="onAudioTimeUpdate()" onloadedmetadata="onAudioMetadataLoaded()" onended="onAudioEnded()"></audio>
 
-      <!-- 탐색 슬라이더 바 -->
       <div class="space-y-1">
         <input type="range" id="audio-progress" min="0" max="100" value="0" step="0.1" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer" oninput="seekAudio(event)">
         <div class="flex justify-between text-[11px] font-mono text-slate-500 font-semibold">
@@ -251,9 +216,7 @@
         </div>
       </div>
 
-      <!-- 플레이어 컨트롤 버튼들 -->
       <div class="flex items-center justify-between mt-2 pt-2 border-t border-slate-100">
-        <!-- 속도 조절 -->
         <div class="flex items-center gap-1">
           <span class="text-[11px] font-bold text-slate-400 mr-0.5">속도:</span>
           <button onclick="setSpeed(0.8)" class="speed-btn px-2 py-0.5 text-xs font-bold rounded-lg border bg-white text-slate-600" data-speed="0.8">0.8x</button>
@@ -261,7 +224,6 @@
           <button onclick="setSpeed(1.2)" class="speed-btn px-2 py-0.5 text-xs font-bold rounded-lg border bg-white text-slate-600" data-speed="1.2">1.2x</button>
         </div>
 
-        <!-- 재생/정지 및 5초 앞뒤 이동 -->
         <div class="flex items-center gap-2">
           <button onclick="skipAudio(-5)" class="p-2 text-slate-600 hover:text-indigo-600 hover:bg-slate-100 rounded-full transition" title="5초 뒤로">
             <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
@@ -274,7 +236,6 @@
           </button>
         </div>
 
-        <!-- 볼륨 조절 -->
         <div class="flex items-center gap-1.5">
           <button onclick="toggleMute()" class="text-slate-500 hover:text-indigo-600 transition">
             <i data-lucide="volume-2" id="volume-icon" class="w-4 h-4"></i>
@@ -284,7 +245,7 @@
       </div>
     </div>
 
-    <!-- 학습 모드 vs 미니 게임 모드 탭 스위처 -->
+    <!-- 모드 탭 -->
     <div class="bg-white/80 p-1.5 rounded-2xl flex max-w-xs w-full mx-auto shadow-sm border border-slate-200 mb-4">
       <button id="tab-btn-study" onclick="switchSongTab('study')" class="flex-1 py-2 text-xs sm:text-sm rounded-xl font-black flex items-center justify-center gap-1.5 bg-indigo-600 text-white shadow transition">
         <i data-lucide="book-open" class="w-4 h-4"></i> 핵심 단어장
@@ -294,35 +255,24 @@
       </button>
     </div>
 
-
-    <!-- ================= 단어장 탭 화면 ================= -->
+    <!-- 단어장 탭 -->
     <div id="song-tab-study" class="w-full flex flex-col items-center">
-      <div id="vocab-cards-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full text-left">
-        <!-- 동적으로 단어 카드들이 주입됩니다 -->
-      </div>
-
-      <!-- 전체 가사 보기 토글 -->
+      <div id="vocab-cards-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full text-left"></div>
       <details class="w-full bg-white/90 rounded-2xl p-4 shadow-sm border border-slate-200 text-left text-xs mt-4">
         <summary class="font-bold text-slate-800 cursor-pointer flex justify-between items-center">
           <span>📖 이 곡의 전체 라틴어 가사 및 번역 보기</span>
           <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
         </summary>
-        <div id="song-full-lyrics" class="mt-3 space-y-2.5 text-slate-600 border-t pt-3 font-sans leading-relaxed">
-          <!-- 곡별 전체 가사 -->
-        </div>
+        <div id="song-full-lyrics" class="mt-3 space-y-2.5 text-slate-600 border-t pt-3 font-sans leading-relaxed"></div>
       </details>
     </div>
 
-
-    <!-- ================= 미니게임 탭 화면 ================= -->
+    <!-- 미니게임 탭 -->
     <div id="song-tab-game" class="w-full hidden flex-col items-center">
-      
-      <!-- [곡 1] 살베 마테르 게임: 3D 플립카드 & 4지선다 퀴즈 -->
+      <!-- 1. 살베 마테르 -->
       <div id="game-salve" class="w-full hidden flex-col items-center max-w-md">
-        <!-- 3D 뒤집기 플래시 카드 -->
         <div class="card-perspective w-full h-72 cursor-pointer mb-3" onclick="flipSalveCard()">
           <div id="salve-card-inner" class="card-inner shadow-xl rounded-3xl">
-            <!-- 앞면 -->
             <div class="card-front bg-gradient-to-br from-white via-indigo-50 to-blue-50 border-4 border-indigo-200 p-6 flex flex-col justify-between">
               <div class="w-full flex justify-between items-center">
                 <span class="text-2xl">✨</span>
@@ -336,7 +286,6 @@
                 <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i> 터치하면 한글 뜻이 나타나요!
               </div>
             </div>
-            <!-- 뒷면 -->
             <div class="card-back bg-gradient-to-br from-amber-50 via-orange-50 to-white border-4 border-amber-300 p-6 flex flex-col justify-between">
               <div class="w-full flex justify-between items-center">
                 <span class="text-2xl">💡</span>
@@ -350,14 +299,12 @@
             </div>
           </div>
         </div>
-
         <div class="flex items-center justify-between w-full gap-2 mb-6">
           <button onclick="salveCardNav(-1)" class="flex-1 py-2.5 bg-white border border-slate-200 rounded-xl font-bold text-sm shadow-sm">이전 단어</button>
           <span id="salve-card-page" class="text-xs font-mono font-bold text-slate-500 px-2">1/8</span>
           <button onclick="salveCardNav(1)" class="flex-1 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-sm shadow-md">다음 단어</button>
         </div>
 
-        <!-- 4지선다 스피드 퀴즈 영역 -->
         <div class="w-full bg-white rounded-3xl p-5 shadow-lg border-2 border-indigo-100 text-center">
           <div class="flex justify-between items-center text-xs font-bold text-slate-500 mb-2">
             <span>스피드 4지선다 퀴즈</span>
@@ -372,8 +319,7 @@
         </div>
       </div>
 
-
-      <!-- [곡 2] 우비 카리타스 게임: 카드 매칭 짝맞추기 게임 (Memory Flip Match) -->
+      <!-- 2. 우비 카리타스 -->
       <div id="game-ubi" class="w-full hidden flex-col items-center max-w-lg">
         <div class="w-full flex justify-between items-center bg-white/95 px-4 py-3 rounded-2xl border border-emerald-200 shadow-sm mb-3">
           <div class="text-left">
@@ -387,13 +333,7 @@
             </button>
           </div>
         </div>
-
-        <!-- 12장의 카드 그리드 (6쌍) -->
-        <div id="ubi-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-2.5 w-full">
-          <!-- 동적 생성 카드 -->
-        </div>
-
-        <!-- 승리 축하 배너 -->
+        <div id="ubi-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-2.5 w-full"></div>
         <div id="ubi-win-banner" class="hidden w-full bg-emerald-500 text-white rounded-2xl p-4 mt-4 shadow-lg text-center animate-gentle">
           <div class="text-3xl mb-1">🎉 참 잘했어요! 💖</div>
           <p class="text-xs font-bold text-emerald-100">모든 사랑의 라틴어 짝을 다 찾았습니다!</p>
@@ -403,8 +343,7 @@
         </div>
       </div>
 
-
-      <!-- [곡 3] 아도레무스 게임: 3x3 라틴어 빙고 어드벤처 (Bingo Adventure) -->
+      <!-- 3. 아도레무스 -->
       <div id="game-adoremus" class="w-full hidden flex-col items-center max-w-md">
         <div class="w-full bg-white/95 p-4 rounded-3xl border-2 border-amber-200 shadow-md text-center mb-3">
           <div class="flex justify-between items-center text-xs font-bold text-amber-800 mb-1">
@@ -417,13 +356,7 @@
             <span id="bingo-target-meaning" class="text-lg sm:text-xl font-black text-amber-950">흠숭하나이다</span>
           </div>
         </div>
-
-        <!-- 3x3 빙고 보드판 -->
-        <div id="bingo-grid" class="grid grid-cols-3 gap-2 w-full p-2 bg-amber-100/70 rounded-3xl border-2 border-amber-300">
-          <!-- 9개 칸 동적 주입 -->
-        </div>
-
-        <!-- 빙고 성공 알림 -->
+        <div id="bingo-grid" class="grid grid-cols-3 gap-2 w-full p-2 bg-amber-100/70 rounded-3xl border-2 border-amber-300"></div>
         <div id="bingo-win-msg" class="hidden w-full bg-amber-500 text-white rounded-2xl p-4 mt-3 shadow-lg text-center animate-gentle">
           <div class="text-3xl mb-1">🎊 BINGO 달성! 👑</div>
           <p class="text-xs text-amber-100">지극히 거룩한 성체를 영원히 흠숭하나이다!</p>
@@ -433,10 +366,8 @@
         </div>
       </div>
 
-
-      <!-- [곡 4] 아베 베룸 게임: 주사위 굴리기 & 로켓 우주 지도 탐험 -->
+      <!-- 4. 아베 베룸 -->
       <div id="game-ave" class="w-full hidden flex-col items-center max-w-lg">
-        <!-- 보드게임 제어판 (주사위 및 상태) -->
         <div class="w-full bg-white/95 p-4 rounded-3xl border-2 border-rose-200 shadow-md mb-3 text-left">
           <div class="flex items-center justify-between gap-2">
             <div>
@@ -445,36 +376,27 @@
                 내 위치: <span id="board-player-step" class="text-rose-600 font-mono">0</span>번째 칸 (출발!)
               </h4>
             </div>
-            <!-- 주사위 굴리기 버튼 -->
             <button id="dice-roll-btn" onclick="rollDice()" class="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white font-black rounded-2xl shadow-md active:scale-95 transition">
               <span id="dice-face" class="text-2xl">🎲</span>
               <span id="dice-btn-text">주사위 굴리기!</span>
             </button>
           </div>
-          <!-- 피드백 메시지 배너 -->
           <div id="board-game-feedback" class="mt-2.5 text-xs font-bold text-slate-600 min-h-[20px] bg-slate-50 p-2 rounded-xl border border-slate-200">
             주사위를 굴려서 탐험을 시작해보세요! 🚀
           </div>
         </div>
+        <div id="board-track" class="grid grid-cols-4 sm:grid-cols-5 gap-2 w-full p-3 bg-rose-50/70 rounded-3xl border-2 border-rose-200 shadow-inner"></div>
 
-        <!-- 15칸 보드게임 지도 (스네이크형 맵 레이아웃) -->
-        <div id="board-track" class="grid grid-cols-4 sm:grid-cols-5 gap-2 w-full p-3 bg-rose-50/70 rounded-3xl border-2 border-rose-200 shadow-inner">
-          <!-- 16개 칸 동적 생성 (0번 출발부터 15번 골인까지) -->
-        </div>
-
-        <!-- 문제 풀기 팝업 모달창 -->
         <div id="board-quiz-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border-4 border-rose-300 text-center animate-gentle">
             <span class="text-xs bg-rose-100 text-rose-800 px-3 py-1 rounded-full font-bold">도착한 칸의 퀴즈!</span>
             <div id="modal-quiz-word" class="text-2xl font-black text-rose-950 latin-font mt-3 mb-1">Corpus</div>
             <p id="modal-quiz-phonetic" class="text-xs text-slate-400 mb-4">[코르-푸스]</p>
             <p class="text-xs font-bold text-slate-700 mb-3">이 라틴어 단어의 뜻은 무엇일까요?</p>
-            
             <div id="modal-quiz-options" class="grid grid-cols-1 gap-2"></div>
           </div>
         </div>
 
-        <!-- 최종 골인 모달창 -->
         <div id="board-finish-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border-4 border-amber-300 text-center animate-gentle">
             <div class="text-5xl mb-2">🏆🚀🎉</div>
@@ -487,18 +409,12 @@
             </button>
           </div>
         </div>
-
       </div>
-
     </div>
-
   </section>
 
-
   <script>
-    /* =========================================================
-       1. 4개 성가 통합 데이터베이스
-    ========================================================= */
+    /* 1. 4개 성가 통합 데이터베이스 */
     const SONGS_DB = {
       salve: {
         id: "salve",
@@ -506,8 +422,11 @@
         sub: "자비로우신 어머니, 하례하나이다",
         badge: "제 1 곡 • 성모 찬미",
         themeColor: "indigo",
-        audioSrc: "Salve Mater misericordiae.mp3",
-        defaultWebAudio: "https://upload.wikimedia.org/wikipedia/commons/e/ec/Salve_Regina_monasticum.ogg",
+        audioSources: [
+          "Salve Mater misericordiae.mp3",
+          "salve mater misericordiae.mp3",
+          "Salve Mater.mp3"
+        ],
         lyrics: `
           <p class="font-bold text-indigo-900">[후렴] Salve mater misericórdiae, Mater Dei, et mater véniae, Mater spei, et mater grátiae, Mater plena sanctae laetítiae, O María!</p>
           <p class="text-[11px] text-slate-600">자비로우신 어머니, 하느님의 어머니, 용서의 어머니, 하례하나이다. 희망의 어머니, 은총의 어머니, 거룩한 기쁨 가득하신 어머니, 오 마리아여!</p>
@@ -531,8 +450,12 @@
         sub: "자애와 사랑이 있는 곳에 하느님 계시도다",
         badge: "제 2 곡 • 사랑의 성가",
         themeColor: "emerald",
-        audioSrc: "ubi caritas.mp3",
-        defaultWebAudio: "https://upload.wikimedia.org/wikipedia/commons/e/ec/Salve_Regina_monasticum.ogg",
+        audioSources: [
+          "Ubi caritas.mp3",
+          "ubi caritas.mp3",
+          "Ubi Caritas.mp3",
+          encodeURIComponent("«Ubi caritas» – Canto en honor del Santísimo Sacramento – Canto Gregoriano.mp3")
+        ],
         lyrics: `
           <p class="font-bold text-emerald-900">[후렴] Ubi cáritas et amor, Deus ibi est. Congregávit nos in unum Christi amor.</p>
           <p class="text-[11px] text-slate-600">자애와 사랑이 있는 곳에 하느님께서 계시도다. 그리스도의 사랑이 우리를 하나로 모으셨네.</p>
@@ -556,8 +479,12 @@
         sub: "지극히 거룩한 성체를 영원히 흠숭하나이다",
         badge: "제 3 곡 • 성체 흠숭",
         themeColor: "amber",
-        audioSrc: "Adoremus in æternum I.mp3",
-        defaultWebAudio: "https://upload.wikimedia.org/wikipedia/commons/e/ec/Salve_Regina_monasticum.ogg",
+        audioSources: [
+          "Adoremus in æternum I.mp3",
+          "Adoremus in aeternum I.mp3",
+          "adoremus in aeternum.mp3",
+          "Adoremus.mp3"
+        ],
         lyrics: `
           <p class="font-bold text-amber-900">[후렴] Adorémus in aetérnum sanctíssimum Sacraméntum.</p>
           <p class="text-[11px] text-slate-600">지극히 거룩하신 성체를 영원히 흠숭하나이다.</p>
@@ -582,8 +509,12 @@
         sub: "동정녀 마리아에게서 태어나신 참된 몸이시여",
         badge: "제 4 곡 • 성체 찬미가",
         themeColor: "rose",
-        audioSrc: "ave verum.mp3",
-        defaultWebAudio: "https://upload.wikimedia.org/wikipedia/commons/e/ec/Salve_Regina_monasticum.ogg",
+        audioSources: [
+          "Ave verum Corpus.mp3",
+          "ave verum corpus.mp3",
+          "ave verum.mp3",
+          "Ave verum.mp3"
+        ],
         lyrics: `
           <p class="font-bold text-rose-900">Ave verum Corpus natum de María Vírgine: Vere passum, immolátum in cruce pro hómine:</p>
           <p class="text-[11px] text-slate-600">동정녀 마리아에게서 태어나신 참된 몸이시여, 하례하나이다. 인간을 위하여 십자가 위에서 참으로 수난하시고 희생되신 분이시여.</p>
@@ -605,32 +536,35 @@
       }
     };
 
-    /* =========================================================
-       2. Web Audio API 자체 사운드 효과 (무설치 효과음)
-    ========================================================= */
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-    function playSound(type) {
+    /* 2. Web Audio 사운드 효과 */
+    let audioCtx = null;
+    function getAudioCtx() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
       if (audioCtx.state === 'suspended') {
         audioCtx.resume();
       }
-      const now = audioCtx.currentTime;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
+      return audioCtx;
+    }
+
+    function playSound(type) {
+      const ctx = getAudioCtx();
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
       osc.connect(gain);
-      gain.connect(audioCtx.destination);
+      gain.connect(ctx.destination);
 
       if (type === 'correct') {
-        // 딩동댕 밝은 차임
-        osc.frequency.setValueAtTime(523.25, now); // C5
-        osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
-        osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+        osc.frequency.setValueAtTime(523.25, now);
+        osc.frequency.setValueAtTime(659.25, now + 0.1);
+        osc.frequency.setValueAtTime(783.99, now + 0.2);
         gain.gain.setValueAtTime(0.2, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
         osc.start(now);
         osc.stop(now + 0.5);
       } else if (type === 'wrong') {
-        // 낮은 띵
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(200, now);
         osc.frequency.linearRampToValueAtTime(140, now + 0.3);
@@ -639,7 +573,6 @@
         osc.start(now);
         osc.stop(now + 0.3);
       } else if (type === 'rocket') {
-        // 로켓 발사 슈우웅~
         osc.type = 'sine';
         osc.frequency.setValueAtTime(250, now);
         osc.frequency.exponentialRampToValueAtTime(1200, now + 0.6);
@@ -648,7 +581,6 @@
         osc.start(now);
         osc.stop(now + 0.6);
       } else if (type === 'dice') {
-        // 주사위 톡톡
         osc.type = 'square';
         osc.frequency.setValueAtTime(400, now);
         gain.gain.setValueAtTime(0.15, now);
@@ -658,9 +590,7 @@
       }
     }
 
-    /* =========================================================
-       3. 네비게이션 및 URL 해시 라우터
-    ========================================================= */
+    /* 3. 내비게이션 & 해시 라우터 */
     let currentSongId = "salve";
 
     function navigateTo(dest) {
@@ -696,23 +626,19 @@
     function copyCurrentLink() {
       const shareUrl = window.location.href;
       const btnText = document.getElementById('share-btn-text');
-      
       const tempInput = document.createElement('input');
       tempInput.value = shareUrl;
       document.body.appendChild(tempInput);
       tempInput.select();
       document.execCommand('copy');
       document.body.removeChild(tempInput);
-
       btnText.innerText = "복사 완료! 👍";
       setTimeout(() => {
         btnText.innerText = "링크 복사";
       }, 2000);
     }
 
-    /* =========================================================
-       4. 곡 데이터 로딩 & 탭 전환
-    ========================================================= */
+    /* 4. 곡 로드 & 탭 */
     function loadSongData(songId) {
       const song = SONGS_DB[songId];
       if (!song) return;
@@ -722,7 +648,6 @@
       document.getElementById('song-sub').innerText = song.sub;
       document.getElementById('song-full-lyrics').innerHTML = song.lyrics;
 
-      // 단어장 카드 렌더링
       const vocabContainer = document.getElementById('vocab-cards-container');
       vocabContainer.innerHTML = '';
       song.vocabs.forEach((v, idx) => {
@@ -745,13 +670,8 @@
         vocabContainer.appendChild(div);
       });
 
-      // 오디오 설정
       setupAudioForSong(song);
-
-      // 기본적으로 단어장 탭으로 초기화
       switchSongTab('study');
-
-      // 게임 초기화
       initGameForSong(songId);
       lucide.createIcons();
     }
@@ -797,37 +717,57 @@
       }
     }
 
-    /* =========================================================
-       5. 오디오 플레이어 로직
-    ========================================================= */
+    /* 5. 오디오 플레이어 로직 (다중 파일명 자동 탐색) */
     const chantAudio = document.getElementById('chant-audio');
     const playBtn = document.getElementById('play-btn');
-    const playIcon = document.getElementById('play-icon');
     const progressBar = document.getElementById('audio-progress');
     const currentTimeEl = document.getElementById('current-time');
     const totalDurationEl = document.getElementById('total-duration');
     const audioTitleEl = document.getElementById('audio-title');
     const audioStatusEl = document.getElementById('audio-status');
 
+    let currentAudioSourceList = [];
+    let currentAudioSourceIndex = 0;
+
     function setupAudioForSong(song) {
       pauseChantAudio();
       audioTitleEl.innerText = song.title;
-      audioStatusEl.innerText = `음원 연결 중... (${song.audioSrc})`;
-      chantAudio.src = song.audioSrc;
-      chantAudio.onerror = () => {
-        if (chantAudio.src.indexOf('wikimedia') === -1) {
-          chantAudio.src = song.defaultWebAudio;
-          audioStatusEl.innerText = "온라인 스트림 연결됨 (내 MP3 열기 지원)";
-        }
-      };
+      currentAudioSourceList = [...song.audioSources];
+      currentAudioSourceIndex = 0;
+      tryLoadCurrentAudioSource();
     }
+
+    function tryLoadCurrentAudioSource() {
+      if (currentAudioSourceIndex < currentAudioSourceList.length) {
+        const src = currentAudioSourceList[currentAudioSourceIndex];
+        audioStatusEl.innerText = `음원 연결 중... (${src})`;
+        chantAudio.src = src;
+        chantAudio.load();
+      } else {
+        audioStatusEl.innerText = "음원 파일 없음 (우측 '내 MP3 열기'를 눌러주세요)";
+      }
+    }
+
+    chantAudio.addEventListener('error', () => {
+      // 현재 시도한 파일이 실패하면 다음 후보 파일명으로 자동 전환
+      currentAudioSourceIndex++;
+      if (currentAudioSourceIndex < currentAudioSourceList.length) {
+        tryLoadCurrentAudioSource();
+      } else {
+        audioStatusEl.innerText = "음원을 찾을 수 없습니다 ('내 MP3 열기' 지원)";
+      }
+    });
+
+    chantAudio.addEventListener('canplay', () => {
+      audioStatusEl.innerText = "음원 준비 완료 🎶 (재생 가능)";
+    });
 
     function togglePlay() {
       if (chantAudio.paused) {
         chantAudio.play().then(() => {
           updatePlayUI(true);
-        }).catch(() => {
-          audioStatusEl.innerText = "재생 버튼을 누르거나 MP3를 열어주세요";
+        }).catch((err) => {
+          audioStatusEl.innerText = "재생 버튼을 다시 누르거나 '내 MP3 열기'로 재생하세요";
         });
       } else {
         chantAudio.pause();
@@ -865,6 +805,7 @@
 
     function onAudioMetadataLoaded() {
       totalDurationEl.innerText = fmtTime(chantAudio.duration);
+      audioStatusEl.innerText = "음원 준비 완료 🎶";
     }
 
     function onAudioEnded() {
@@ -928,9 +869,7 @@
       window.speechSynthesis.speak(utt);
     }
 
-    /* =========================================================
-       6. 게임 1: 살베 마테르 (플립카드 & 4지선다 스피드 퀴즈)
-    ========================================================= */
+    /* 6. 살베 마테르 게임 */
     let salveCardIdx = 0;
     let salveIsFlipped = false;
     let salveScore = 0;
@@ -1013,9 +952,7 @@
       });
     }
 
-    /* =========================================================
-       7. 게임 2: 우비 카리타스 (카드 매칭 짝맞추기 게임)
-    ========================================================= */
+    /* 7. 우비 카리타스 카드 매칭 */
     let ubiCards = [];
     let ubiFlipped = [];
     let ubiMatchedCount = 0;
@@ -1064,7 +1001,6 @@
       if (ubiFlipped.length === 2) {
         const [first, second] = ubiFlipped;
         if (first.card.pairId === second.card.pairId && first.card.type !== second.card.type) {
-          // 일치!
           playSound('correct');
           first.btn.classList.add('is-matched');
           second.btn.classList.add('is-matched');
@@ -1078,7 +1014,6 @@
             confetti({ particleCount: 80, spread: 100, origin: { y: 0.6 } });
           }
         } else {
-          // 불일치
           playSound('wrong');
           setTimeout(() => {
             [first, second].forEach(item => {
@@ -1092,9 +1027,7 @@
       }
     }
 
-    /* =========================================================
-       8. 게임 3: 아도레무스 (3x3 라틴어 빙고 게임)
-    ========================================================= */
+    /* 8. 아도레무스 빙고 */
     let bingoGridData = [];
     let bingoMarked = [];
     let bingoTarget = null;
@@ -1109,7 +1042,6 @@
 
       document.getElementById('bingo-lines-count').innerText = `빙고: 0줄`;
       document.getElementById('bingo-win-msg').classList.add('hidden');
-
       renderBingoBoard();
       pickNextBingoTarget();
     }
@@ -1143,7 +1075,6 @@
       if (bingoMarked[idx] || !bingoTarget) return;
 
       if (vocab.latin === bingoTarget.latin) {
-        // 정답!
         playSound('correct');
         bingoMarked[idx] = true;
         cell.className = "h-20 sm:h-24 rounded-2xl bg-amber-500 text-white border-2 border-amber-600 flex flex-col items-center justify-center p-1 text-center shadow-inner scale-95 transition pointer-events-none";
@@ -1154,7 +1085,6 @@
         checkBingoLines();
         pickNextBingoTarget();
       } else {
-        // 오답
         playSound('wrong');
         cell.classList.add('bg-rose-100', 'border-rose-400');
         setTimeout(() => {
@@ -1165,9 +1095,9 @@
 
     function checkBingoLines() {
       const lines = [
-        [0, 1, 2], [3, 4, 5], [6, 7, 8], // 가로
-        [0, 3, 6], [1, 4, 7], [2, 5, 8], // 세로
-        [0, 4, 8], [2, 4, 6]             // 대각선
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],
+        [0, 4, 8], [2, 4, 6]
       ];
       let completedLines = 0;
       lines.forEach(l => {
@@ -1183,10 +1113,8 @@
       }
     }
 
-    /* =========================================================
-       9. 게임 4: 아베 베룸 (주사위 & 로켓 보드게임 지도 탐험)
-    ========================================================= */
-    const TOTAL_STEPS = 15; // 0번 출발 ~ 15번 도착
+    /* 9. 아베 베룸 보드게임 */
+    const TOTAL_STEPS = 15;
     let playerStep = 0;
     let isDiceRolling = false;
     let lastRolledNumber = 1;
@@ -1239,14 +1167,13 @@
       if (isDiceRolling || playerStep >= TOTAL_STEPS) return;
       isDiceRolling = true;
 
-      const diceBtn = document.getElementById('dice-roll-btn');
       const diceFace = document.getElementById('dice-face');
       const faces = ['⚀', '⚁', '⚂', '⚃'];
       
       let count = 0;
       const interval = setInterval(() => {
         playSound('dice');
-        const r = Math.floor(Math.random() * 4) + 1; // 1 ~ 4칸
+        const r = Math.floor(Math.random() * 4) + 1;
         diceFace.innerText = faces[r - 1];
         lastRolledNumber = r;
         count++;
@@ -1261,7 +1188,6 @@
     function onDiceResult(number) {
       document.getElementById('board-game-feedback').innerHTML = `🎲 주사위에서 <b>${number}</b>가 나왔어요! 말 이동 중...`;
       
-      // 단계별 전진 애니메이션
       let targetStep = Math.min(TOTAL_STEPS, playerStep + number);
       let currentMove = playerStep;
 
@@ -1274,11 +1200,9 @@
         } else {
           clearInterval(moveInterval);
           if (playerStep >= TOTAL_STEPS) {
-            // 골인!
             confetti({ particleCount: 100, spread: 100, origin: { y: 0.6 } });
             document.getElementById('board-finish-modal').classList.remove('hidden');
           } else {
-            // 도착 칸의 단어 퀴즈 출제!
             openBoardQuizModal();
           }
         }
@@ -1316,11 +1240,10 @@
       modal.classList.add('hidden');
 
       if (isCorrect) {
-        // 정답! 로케트 발사 고속 점프!
         playSound('rocket');
         confetti({ particleCount: 40, spread: 60, origin: { y: 0.5 } });
         
-        const jumpBonus = lastRolledNumber; // 나온 수만큼 로켓 점프!
+        const jumpBonus = lastRolledNumber;
         document.getElementById('board-game-feedback').innerHTML = `
           <span class="text-rose-600 font-extrabold">🚀 정답이에요! 로케트 발사! 주사위 나온 수(+${jumpBonus})만큼 앞으로 초고속 점프합니다!</span>
         `;
@@ -1336,7 +1259,6 @@
           }, 800);
         }
       } else {
-        // 오답 피드백: 아쉬워요 걸어서 한 칸 뒤로
         playSound('wrong');
         document.getElementById('board-game-feedback').innerHTML = `
           <span class="text-slate-600">아쉬워요~ 정답은 '<b>${correctMeaning}</b>'였어요! 🚶 걸어서 한 칸 뒤로 이동합니다.</span>
@@ -1345,7 +1267,6 @@
         document.getElementById('board-player-step').innerText = playerStep;
         renderBoardTrack();
 
-        // 1초 후 뒤로 간 칸의 문제 다시 도전
         if (playerStep > 0) {
           setTimeout(() => {
             openBoardQuizModal();
